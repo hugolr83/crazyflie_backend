@@ -1,0 +1,37 @@
+[tool.black]
+line-length = 120
+
+[[tool.mypy.overrides]]
+module = [
+    # The Crazyflie lib doesn't provide type annotations. If we are motivated, I might go write a stub only for what we use
+    "cflib",
+    "cflib.crazyflie",
+    "cflib.crtp",
+    # Uvicorn is really just the entrypoint for FastAPI so Mypy wouldn't probably find anything anyway
+    "uvicorn",
+]
+ignore_missing_imports = true
+
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = "Backend handling communications between clients and drones and data persistance"
+authors = [
+    "Your Name <you@example.com>"
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.68.1"
+uvicorn = "^0.15.0"
+cflib = "^0.1.16"
+autoname = "^2.0.0"
+
+[tool.poetry.dev-dependencies]
+mypy = "0.910"  # Mypy is pinned so that it doesn't randomly break our main branch CI
+flake8 = "^3.9.2"
+black = "^21.8b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
