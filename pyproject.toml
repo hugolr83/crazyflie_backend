@@ -1,6 +1,19 @@
 [tool.black]
 line-length = 120
 
+[tool.mypy]
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+pretty = true
+show_column_numbers = true
+strict_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+
 [[tool.mypy.overrides]]
 module = [
     # The Crazyflie lib doesn't provide type annotations. If we are motivated, I might go write a stub only for what we use
@@ -14,7 +27,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "backend"
-version = "0.1.0"
+version = "0.0.1"
 description = "Backend handling communications between clients and drones and data persistance"
 authors = [
     "Your Name <you@example.com>"
@@ -31,6 +44,9 @@ autoname = "^2.0.0"
 mypy = "0.910"  # Mypy is pinned so that it doesn't randomly break our main branch CI
 flake8 = "^3.9.2"
 black = "^21.8b0"
+pytest = "^6.2.5"
+pytest_async = "^0.1.1"
+requests = "^2.26.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

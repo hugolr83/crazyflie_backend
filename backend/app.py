@@ -1,8 +1,9 @@
 from asyncio import Queue
 
-import cflib.crtp as crtp
 import uvicorn
+from cflib import crtp
 from fastapi import FastAPI
+from starlette.responses import JSONResponse
 
 from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
 from backend.communication.message import Message
@@ -19,11 +20,16 @@ async def startup_event() -> None:
 
 @app.post("/test/send")
 async def send(x: int, y: int, z: int) -> Message:
-    queue: Queue = app.state.queue
+    queue: Queue[Message] = app.state.queue
     drone: CrazyflieDroneLink = app.state.crazyflie
     await drone.send_message(Message(x, y, z))
     response = await queue.get()
     return response
+
+
+@app.get("/test/test")
+async def simple_test() -> JSONResponse:
+    return JSONResponse({"response": "hello world"})
 
 
 if __name__ == "__main__":

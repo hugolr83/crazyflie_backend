@@ -13,7 +13,7 @@ class Message:
     @classmethod
     def from_bytes(cls, data: bytes) -> Message:
         x, y, z = struct.unpack("<fff", data)
-        return cls(x=x, y=y, z=z)
+        return cls(x, y, z)
 
     def serialize(self) -> bytes:
         return struct.pack("<fff", self.x, self.y, self.z)
