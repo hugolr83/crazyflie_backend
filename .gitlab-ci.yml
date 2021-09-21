@@ -1,0 +1,57 @@
+image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/ci:0.0.1
+
+.cache: &pull_cache
+  - key:
+      files:
+        - poetry.lock
+    paths:
+      - .venv
+    policy: pull
+
+.only: &only
+  refs:
+    - main
+    - merge_requests
+
+stages:
+  - install
+  - test
+
+install:
+  stage: install
+  script:
+    - poetry config virtualenvs.in-project true
+    - poetry install --no-root
+  cache:
+  - key:
+      files:
+        - poetry.lock
+    paths:
+      - .venv
+    policy: pull-push
+  only: *only
+
+static:
+  stage: test
+  script:
+    - poetry run black . --check
+    - poetry run flake8
+    - poetry run mypy . --show-error-codes
+  cache: *pull_cache
+  only: *only
+  dependencies:
+    - install
+
+tests:
+  stage: test
+  script:
+    - poetry run pytest --cov=backend
+    - poetry run coverage xml
+  cache: *pull_cache
+  only: *only
+  dependencies:
+    - install
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  artifacts:
+    reports:
+      cobertura: coverage.xml

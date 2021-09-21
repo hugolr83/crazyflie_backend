@@ -1,5 +1,19 @@
 [tool.black]
 line-length = 120
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)
+'''
 
 [tool.mypy]
 check_untyped_defs = true
@@ -7,6 +21,20 @@ disallow_incomplete_defs = true
 disallow_subclassing_any = true
 disallow_untyped_decorators = true
 disallow_untyped_defs = true
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)
+'''
 pretty = true
 show_column_numbers = true
 strict_optional = true
@@ -30,7 +58,11 @@ name = "backend"
 version = "0.0.1"
 description = "Backend handling communications between clients and drones and data persistance"
 authors = [
-    "Your Name <you@example.com>"
+    "Hugo Lachieze-Rey <hugo.lachieze-rey@polymtl.ca>",
+    "Pier-Luc Tanguay <pl.tanguay@polymtl.ca>",
+    "Sami Sadfa <sami.sadfa@polymtl.ca>",
+    "Wail Ayad <abderrahmane-wail.ayad@polymtl.ca>",
+    "William Trépanier <william.trepanier@polymtl.ca>",
 ]
 
 [tool.poetry.dependencies]
@@ -46,6 +78,7 @@ flake8 = "^3.9.2"
 black = "^21.8b0"
 pytest = "^6.2.5"
 pytest_async = "^0.1.1"
+pytest-cov = "^2.12.1"
 requests = "^2.26.0"
 
 [build-system]
