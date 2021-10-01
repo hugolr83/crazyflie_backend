@@ -67,10 +67,11 @@ authors = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
+autoname = "^2.0.0"
+cflib = "^0.1.16"
 fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
-cflib = "^0.1.16"
-autoname = "^2.0.0"
+pydantic = "^1.8.2"
 
 [tool.poetry.dev-dependencies]
 mypy = "0.910"  # Mypy is pinned so that it doesn't randomly break our main branch CI
