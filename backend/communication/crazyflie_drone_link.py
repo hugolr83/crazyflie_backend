@@ -14,7 +14,7 @@ from backend.communication.command import Command
 from backend.communication.drone_link import DroneLink, InboundMessageCallable
 from backend.exceptions.communication import CrazyflieCommunicationException
 
-CRAZYFLIE_CONNECTION_TIMEOUT: Final = 5
+CRAZYFLIE_CONNECTION_TIMEOUT: Final = 15
 
 
 @dataclass

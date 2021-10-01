@@ -1,7 +1,7 @@
 FROM python:3.9-slim-bullseye
 
 # Install curl
-RUN apt-get update && apt-get install curl -y
+RUN apt-get update && apt-get install curl libusb-1.0-0 -y
 
 # Install Poetry
 ENV POETRY_HOME="/opt/poetry"
