@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from asyncio import Queue
+from collections import Callable, Coroutine
+from typing import Any
 
-from backend.communication.message import Message
+from backend.communication.command import Command
+
+InboundMessageCallable = Callable[[bytes], Coroutine[Any, Any, None]]
 
 
 class DroneLink(ABC):
@@ -12,10 +15,5 @@ class DroneLink(ABC):
         ...
 
     @abstractmethod
-    async def send_message(self, message: Message) -> None:
-        ...
-
-    @property
-    @abstractmethod
-    def inbound_queue(self) -> Queue[Message]:
+    async def send_command(self, command: Command) -> None:
         ...
