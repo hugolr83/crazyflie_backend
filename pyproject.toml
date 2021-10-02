@@ -86,6 +86,7 @@ requests = "^2.26.0"
 [tool.semantic_release]
 version_variable = "pyproject.toml:version"
 branch = "main"
+commit_author = "Alfred Pennyworth <alfred.pennyworth@polymtl.ca>"
 hvcs = "gitlab"
 upload_to_pypi = false
 upload_to_release = false

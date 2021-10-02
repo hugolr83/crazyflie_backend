@@ -13,10 +13,21 @@ image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf39
     - main
     - merge_requests
 
+.except: &exclude_release
+  changes:
+    - CHANGELOG.md
+
+.only_release: &only_release
+  refs:
+    - main
+  variables:
+    - $CI_COMMIT_AUTHOR == "Alfred Pennyworth <alfred.pennyworth@polymtl.ca>"
+
 stages:
   - install
   - test
   - tag_release
+  - publish
 
 install:
   stage: install
@@ -40,6 +51,7 @@ static:
     - poetry run mypy . --show-error-codes
   cache: *pull_cache
   only: *only
+  except: *exclude_release
   dependencies:
     - install
 
@@ -50,6 +62,7 @@ tests:
     - poetry run coverage xml
   cache: *pull_cache
   only: *only
+  except: *exclude_release
   dependencies:
     - install
   coverage: '/^TOTAL.+?(\d+\%)$/'
@@ -68,9 +81,20 @@ tag_release:
   only:
     refs:
       - main
+  except: *exclude_release
   variables:
     GIT_STRATEGY: clone
     GITLAB_CI: "true"
   dependencies:
     - static
     - tests
+
+publish_backend:
+  stage: publish
+  script:
+    - poetry build
+    - poetry publish --repository gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN
+  cache: *pull_cache
+  only: *only_release
+  dependencies:
+    - install
