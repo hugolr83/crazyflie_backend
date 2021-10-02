@@ -61,6 +61,8 @@ tag_release:
   stage: tag_release
   script:
     - git remote set-url origin https://root:$SEMANTIC_RELEASE_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+    - git config --global user.name "Alfred Pennyworth"
+    - git config --global user.email "alfred.pennyworth@polymtl.ca"
     - poetry run semantic-release publish
   cache: *pull_cache
   only:
