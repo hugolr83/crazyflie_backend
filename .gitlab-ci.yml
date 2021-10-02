@@ -1,4 +1,4 @@
-image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/ci:0.0.1
+image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/ci:0.0.2
 
 .cache: &pull_cache
   - key:
@@ -16,6 +16,7 @@ image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf39
 stages:
   - install
   - test
+  - tag_release
 
 install:
   stage: install
@@ -55,3 +56,19 @@ tests:
   artifacts:
     reports:
       cobertura: coverage.xml
+
+tag_release:
+  stage: tag_release
+  script:
+    - git remote set-url origin https://root:$SEMANTIC_RELEASE_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+    - poetry run semantic-release publish
+  cache: *pull_cache
+  only:
+    refs:
+      - main
+  variables:
+    GIT_STRATEGY: clone
+    GITLAB_CI: "true"
+  dependencies:
+    - static
+    - tests
