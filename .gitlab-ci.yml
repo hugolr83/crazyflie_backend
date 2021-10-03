@@ -108,8 +108,7 @@ build_and_push_backend_image:
   stage: build_and_push_backend_image
   image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/dind:0.0.1
   services:
-    - name: docker:dind
-      alias: localhost
+    - docker:dind
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$BACKEND_VERSION
     FETCHER_IMAGE_TAG: $CI_REGISTRY_IMAGE/schema-fetcher:0.0.1
@@ -120,10 +119,10 @@ build_and_push_backend_image:
   script:
     - docker build -t $IMAGE_TAG --build-arg BACKEND_VERSION=$BACKEND_VERSION --build-arg PYPI_REPO_URL=$PYPI_REPO_URL .
     - docker network create ci_network
-    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --name backend --network ci_network $IMAGE_TAG
+    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --name backend $IMAGE_TAG --bind 127.0.0.1
     - sleep 10s
-    - docker run -dit --name fetcher --network ci_network $FETCHER_IMAGE_TAG
-    - docker exec fetcher curl http://backend:8000/openapi.json --output /tmp/openapi.json
+    - docker run -dit --name fetcher --network container:backend $FETCHER_IMAGE_TAG -h 127.0.0.1
+    - docker exec fetcher curl http://127.0.0.1:8000/openapi.json --output /tmp/openapi.json
     - docker cp fetcher:/tmp/openapi.json openapi.json
     - docker rm -f fetcher
     - docker rm -f backend
