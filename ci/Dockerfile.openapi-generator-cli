@@ -1,0 +1,7 @@
+FROM adoptopenjdk/openjdk11
+
+RUN apt-get update && apt-get install -y wget
+
+# Install the generator
+RUN mkdir -p /openapitools && \
+    wget https://oss.sonatype.org/content/repositories/snapshots/org/openapitools/openapi-generator-cli/5.3.0-SNAPSHOT/openapi-generator-cli-5.3.0-20211002.080854-45.jar -O /openapitools/openapi-generator-cli.jar
