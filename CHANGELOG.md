@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2021-10-03)
+### Feature
+* Autonomous docker build ([`ee9d55d`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/ee9d55de4d8fafcd1641d01396498f75a9549d51))
+* Refactor the Dockerfile to allow building without going through the Pypi repository ([`b2e39e4`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/b2e39e4a0769e872ce6ccd8f247ad82d7f76ab36))
+
+### Fix
+* Corrected the endpoint for the OpenAPI schema ([`787919b`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/787919b7204bf9faa1cc0bcdf863336c8e58fe85))
+
 ## v0.5.1 (2021-10-03)
 ### Fix
 * Fix the npm repository url ([`51fabcc`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/51fabcce6cd1d09224ffbce9adf19be56ae5da60))
