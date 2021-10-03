@@ -6,7 +6,7 @@ from backend.exceptions.response import DroneNotFoundException, WrongDroneTypeEx
 from backend.models.drone_model import DroneModel, DroneType
 from backend.utils import generate_responses_documentation
 
-router = APIRouter(prefix="/api/crazyflie", tags=["crazyflie"])
+router = APIRouter(prefix="/crazyflie", tags=["crazyflie"])
 
 
 @router.post(
@@ -16,6 +16,7 @@ router = APIRouter(prefix="/api/crazyflie", tags=["crazyflie"])
     responses=generate_responses_documentation(DroneNotFoundException, WrongDroneTypeException),
 )
 async def identify(uuid: str) -> DroneModel:
+    """Identify a specific Crazyflie drone. The LEDs of that drone will flash for a couple of seconds."""
     if not (drone := get_registry().get_drone(uuid)):
         raise DroneNotFoundException(uuid)
 

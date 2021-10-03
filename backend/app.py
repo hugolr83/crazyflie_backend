@@ -13,11 +13,27 @@ from backend.routers.crazyflie import router as crazyflie_router
 
 ONLY_SERVE_OPENAPI_SCHEMA_ENV_VAR: Final = "ONLY_SERVE_OPENAPI_SCHEMA"
 
+TAGS_METADATA: Final = [
+    {
+        "name": "argos",
+        "description": "Endpoints that target only the Argos (simulated) drones",
+    },
+    {
+        "name": "common",
+        "description": "Endpoints that target all the drones",
+    },
+    {
+        "name": "crazyflie",
+        "description": "Endpoints that target only the Crazyflie drones",
+    },
+]
+
 app = FastAPI(
     title="Backend",
-    description="Serving request from the WebUI to the Crazyflie and Argos drones",
+    description="Serving request from the WebUI to the Crazyflie and Argos drones 🚀",
+    openapi_tags=TAGS_METADATA,
     servers=[
-        {"url": "http://backend:8080", "description": "Release endpoint"},
+        {"url": "http://backend:8080/api", "description": "Release endpoint"},
         {"url": "http://localhost:8000", "description": "Development endpoint"},
     ],
     version=__version__,
