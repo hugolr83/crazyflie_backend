@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2021-10-03)
+### Feature
+* Moved all the endpoints under /api to simplify reverse proxy setup ([`7aa3d8f`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/7aa3d8f670d416e850d1e30b6f50f4d0664236ec))
+
 ## v0.6.1 (2021-10-03)
 ### Fix
 * Add back the working npm auth settings ([`6915fa6`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/6915fa685542e98d1f1ea303a078f890a74b18cc))
