@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.1 (2021-10-03)
+### Fix
+* Fix the npm repository url ([`51fabcc`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/51fabcce6cd1d09224ffbce9adf19be56ae5da60))
+* Fix the npm repository url ([`66192cf`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/66192cf5c4546c42d99ded0c4b2980d8f09040dd))
+
 ## v0.5.0 (2021-10-03)
 ### Feature
 * Automatically generate an Angular client for the API ([`f7a8339`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/f7a8339c707b8487b13233c4c5aeda6b41018408))
