@@ -6,11 +6,12 @@ from backend.exceptions.response import DroneNotFoundException, WrongDroneTypeEx
 from backend.models.drone_model import DroneModel, DroneType
 from backend.utils import generate_responses_documentation
 
-router = APIRouter(prefix="/crazyflie", tags=["crazyflie"])
+router = APIRouter(prefix="/api/crazyflie", tags=["crazyflie"])
 
 
 @router.post(
     "/identify",
+    operation_id="identify_crazyflie",
     response_model=DroneModel,
     responses=generate_responses_documentation(DroneNotFoundException, WrongDroneTypeException),
 )
