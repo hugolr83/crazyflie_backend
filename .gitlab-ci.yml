@@ -30,50 +30,50 @@ stages:
   - publish_backend_package
   - build_and_push_backend_image
 
-install:
-  stage: install
-  script:
-    - poetry config virtualenvs.in-project true
-    - poetry install --no-root
-    - echo "BACKEND_VERSION=$(poetry version --short)" >> install.env
-  cache:
-  - key:
-      files:
-        - poetry.lock
-    paths:
-      - .venv
-    policy: pull-push
-  only: *only
-  artifacts:
-    reports:
-      dotenv: install.env
+#install:
+#  stage: install
+#  script:
+#    - poetry config virtualenvs.in-project true
+#    - poetry install --no-root
+#    - echo "BACKEND_VERSION=$(poetry version --short)" >> install.env
+#  cache:
+#  - key:
+#      files:
+#        - poetry.lock
+#    paths:
+#      - .venv
+#    policy: pull-push
+#  only: *only
+#  artifacts:
+#    reports:
+#      dotenv: install.env
 
-static:
-  stage: test
-  script:
-    - poetry run black . --check
-    - poetry run flake8
-    - poetry run mypy . --show-error-codes
-  cache: *pull_cache
-  only: *only
-  except: *exclude_release
-  dependencies:
-    - install
-
-tests:
-  stage: test
-  script:
-    - poetry run pytest --cov=backend
-    - poetry run coverage xml
-  cache: *pull_cache
-  only: *only
-  except: *exclude_release
-  dependencies:
-    - install
-  coverage: '/^TOTAL.+?(\d+\%)$/'
-  artifacts:
-    reports:
-      cobertura: coverage.xml
+#static:
+#  stage: test
+#  script:
+#    - poetry run black . --check
+#    - poetry run flake8
+#    - poetry run mypy . --show-error-codes
+#  cache: *pull_cache
+#  only: *only
+#  except: *exclude_release
+#  dependencies:
+#    - install
+#
+#tests:
+#  stage: test
+#  script:
+#    - poetry run pytest --cov=backend
+#    - poetry run coverage xml
+#  cache: *pull_cache
+#  only: *only
+#  except: *exclude_release
+#  dependencies:
+#    - install
+#  coverage: '/^TOTAL.+?(\d+\%)$/'
+#  artifacts:
+#    reports:
+#      cobertura: coverage.xml
 
 tag_release:
   stage: tag_release
@@ -119,9 +119,11 @@ build_and_push_backend_image:
   script:
     - docker build -t $IMAGE_TAG --build-arg BACKEND_VERSION=$BACKEND_VERSION --build-arg PYPI_REPO_URL=$PYPI_REPO_URL .
     - docker network create ci_network
-    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --name backend $IMAGE_TAG --bind 127.0.0.1
+    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --name ci_network --name backend $IMAGE_TAG
     - sleep 10s
-    - docker run -dit --name fetcher --network container:backend $FETCHER_IMAGE_TAG -h 127.0.0.1
+    - docker run -dit --name fetcher --network ci_network $FETCHER_IMAGE_TAG
+    - docker container ls --all
+    - docker logs backend
     - docker exec fetcher curl http://127.0.0.1:8000/openapi.json --output /tmp/openapi.json
     - docker cp fetcher:/tmp/openapi.json openapi.json
     - docker rm -f fetcher
