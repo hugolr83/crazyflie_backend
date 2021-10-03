@@ -17,7 +17,7 @@ app = FastAPI(
     title="Backend",
     description="Serving request from the WebUI to the Crazyflie and Argos drones",
     servers=[
-        {"url": "http://localhost:8080", "description": "Reverse-proxy endpoint"},
+        {"url": "http://backend:8080", "description": "Endpoint within Docker"},
         {"url": "http://localhost:8000", "description": "Direct endpoint"},
     ],
     version=__version__,
