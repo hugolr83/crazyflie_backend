@@ -11,10 +11,10 @@ from fastapi.logger import logger
 
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
-from backend.drone import Drone
+from backend.registered_drone import RegisteredDrone
 from backend.communication.message import Message
 from backend.exceptions.communication import ArgosCommunicationException, CrazyflieCommunicationException
-from backend.models.drone_model import DroneType
+from backend.models.drone import DroneType
 from backend.utils import get_environment_variable_or_raise
 
 ARGOS_ENDPOINT_ENV_VAR: Final = "ARGOS_ENDPOINT"
@@ -29,27 +29,27 @@ CRAZYFLIE_URIS: Final = ["radio://0/21/2M/E7E7E7E701", "radio://0/21/2M/E7E7E7E7
 
 @dataclass
 class DroneRegistry:
-    drones: dict[str, Drone] = field(default_factory=dict)
+    drones: dict[str, RegisteredDrone] = field(default_factory=dict)
     inbound_queue: Queue[Message] = Queue()
 
-    def get_drone(self, drone_uuid: str) -> Optional[Drone]:
+    def get_drone(self, drone_uuid: str) -> Optional[RegisteredDrone]:
         return self.drones.get(drone_uuid)
 
-    def get_drones(self, drone_type: Optional[DroneType]) -> Generator[Drone, None, None]:
+    def get_drones(self, drone_type: Optional[DroneType]) -> Generator[RegisteredDrone, None, None]:
         if drone_type:
             yield from self.argos_drones if drone_type == DroneType.ARGOS else self.crazyflie_drones
         else:
             yield from self.drones.values()
 
-    def register_drone(self, drone: Drone) -> None:
+    def register_drone(self, drone: RegisteredDrone) -> None:
         self.drones[drone.uuid] = drone
 
     @property
-    def argos_drones(self) -> Generator[Drone, None, None]:
+    def argos_drones(self) -> Generator[RegisteredDrone, None, None]:
         return (drone for drone in self.drones.values() if drone.drone_type == DroneType.ARGOS)
 
     @property
-    def crazyflie_drones(self) -> Generator[Drone, None, None]:
+    def crazyflie_drones(self) -> Generator[RegisteredDrone, None, None]:
         return (drone for drone in self.drones.values() if drone.drone_type == DroneType.CRAZYFLIE)
 
 
@@ -62,7 +62,7 @@ async def on_incoming_message(drone_uuid: str, data: bytes, inbound_queue: Queue
     await inbound_queue.put(Message(drone_uuid, data))
 
 
-async def initiate_argos_drones(inbound_queue: Queue[Message]) -> AsyncGenerator[Drone, None]:
+async def initiate_argos_drones(inbound_queue: Queue[Message]) -> AsyncGenerator[RegisteredDrone, None]:
     argos_endpoint = get_environment_variable_or_raise(ARGOS_ENDPOINT_ENV_VAR)
     argos_drones_staring_port = int(get_environment_variable_or_raise(ARGOS_DRONES_STARTING_PORT_ENV_VAR))
     argos_number_of_drones = int(get_environment_variable_or_raise(ARGOS_NUMBER_OF_DRONES_ENV_VAR))
@@ -75,13 +75,13 @@ async def initiate_argos_drones(inbound_queue: Queue[Message]) -> AsyncGenerator
                 drone_port,
                 partial(on_incoming_message, drone_uuid=drone_uuid, inbound_queue=inbound_queue),
             )
-            yield Drone(drone_uuid, drone_link)
+            yield RegisteredDrone(drone_uuid, drone_link)
         except ArgosCommunicationException as e:
             logger.warning(f"Unable to connect to Argos drone on port {drone_port}")
             logger.debug(e)
 
 
-async def initiate_crazyflie_drones(inbound_queue: Queue[Message]) -> AsyncGenerator[Drone, None]:
+async def initiate_crazyflie_drones(inbound_queue: Queue[Message]) -> AsyncGenerator[RegisteredDrone, None]:
     crtp.init_drivers(enable_debug_driver=False)
 
     for uri in CRAZYFLIE_URIS:
@@ -90,7 +90,7 @@ async def initiate_crazyflie_drones(inbound_queue: Queue[Message]) -> AsyncGener
             drone_link = await CrazyflieDroneLink.create(
                 uri, partial(on_incoming_message, drone_uuid=drone_uuid, inbound_queue=inbound_queue)
             )
-            yield Drone(drone_uuid, drone_link)
+            yield RegisteredDrone(drone_uuid, drone_link)
         except CrazyflieCommunicationException as e:
             logger.warning(f"Unable to connect to Crazyflie {uri}")
             logger.debug(e)
