@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2021-10-03)
+### Fix
+* Add back the working npm auth settings ([`6915fa6`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/6915fa685542e98d1f1ea303a078f890a74b18cc))
+
 ## v0.6.0 (2021-10-03)
 ### Feature
 * Autonomous docker build ([`ee9d55d`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/ee9d55de4d8fafcd1641d01396498f75a9549d51))
