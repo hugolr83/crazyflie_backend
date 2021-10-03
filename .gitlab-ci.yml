@@ -112,17 +112,19 @@ build_and_push_backend_image:
       alias: localhost
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$BACKEND_VERSION
+    FETCHER_IMAGE_TAG: $CI_REGISTRY_IMAGE/schema-fetcher:0.0.1
     # the token in only valid during the job, so it's not a huge security issue
     PYPI_REPO_URL: https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi/simple
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
   script:
     - docker build -t $IMAGE_TAG --build-arg BACKEND_VERSION=$BACKEND_VERSION --build-arg PYPI_REPO_URL=$PYPI_REPO_URL .
-    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 -p 8000:8000 --name backend $IMAGE_TAG
-    - sleep 15s
-    - CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' backend)
-    - echo $CONTAINER_IP
-    - curl http://$CONTAINER_IP:8000/openapi.json --output openapi.json
+    - docker network create ci_network
+    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --name backend --network ci_network $IMAGE_TAG
+    - sleep 10s
+    - docker run -d --name fetcher --network ci_network $FETCHER_IMAGE_TAG
+    - docker exec fetcher curl http://backend:8000/openapi.json --output /tmp/openapi.json
+    - docker cp fetcher:/tmp/openapi.json openapi.json
     - docker rm -f backend
     # - docker push $IMAGE_TAG
   only: *only
