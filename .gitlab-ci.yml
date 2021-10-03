@@ -122,9 +122,10 @@ build_and_push_backend_image:
     - docker network create ci_network
     - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --name backend --network ci_network $IMAGE_TAG
     - sleep 10s
-    - docker run -d --name fetcher --network ci_network $FETCHER_IMAGE_TAG
+    - docker run -dit --name fetcher --network ci_network $FETCHER_IMAGE_TAG
     - docker exec fetcher curl http://backend:8000/openapi.json --output /tmp/openapi.json
     - docker cp fetcher:/tmp/openapi.json openapi.json
+    - docker rm -f fetcher
     - docker rm -f backend
     # - docker push $IMAGE_TAG
   only: *only
