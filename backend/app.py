@@ -1,3 +1,6 @@
+import os
+from typing import Final
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +9,8 @@ from backend.drone_registry import initiate_links
 from backend.routers.argos import router as argos_router
 from backend.routers.common import router as common_router
 from backend.routers.crazyflie import router as crazyflie_router
+
+ONLY_SERVE_OPENAPI_SCHEMA_ENV_VAR: Final = "ONLY_SERVE_OPENAPI_SCHEMA"
 
 app = FastAPI()
 
@@ -20,7 +25,8 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event() -> None:
-    await initiate_links()
+    if not os.getenv(ONLY_SERVE_OPENAPI_SCHEMA_ENV_VAR):
+        await initiate_links()
 
 
 if __name__ == "__main__":
