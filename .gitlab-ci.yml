@@ -25,10 +25,12 @@ image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf39
 
 stages:
   - install
-#  - test
-#  - tag_release
-#  - publish_backend_package
+  - test
+  - tag_release
+  - publish_backend_package
   - build_and_push_backend_image
+  - generate_api_client
+  - publish_api_client
 
 install:
   stage: install
@@ -48,61 +50,61 @@ install:
     reports:
       dotenv: install.env
 
-#static:
-#  stage: test
-#  script:
-#    - poetry run black . --check
-#    - poetry run flake8
-#    - poetry run mypy . --show-error-codes
-#  cache: *pull_cache
-#  only: *only
-#  except: *exclude_release
-#  dependencies:
-#    - install
-#
-#tests:
-#  stage: test
-#  script:
-#    - poetry run pytest --cov=backend
-#    - poetry run coverage xml
-#  cache: *pull_cache
-#  only: *only
-#  except: *exclude_release
-#  dependencies:
-#    - install
-#  coverage: '/^TOTAL.+?(\d+\%)$/'
-#  artifacts:
-#    reports:
-#      cobertura: coverage.xml
+static:
+  stage: test
+  script:
+    - poetry run black . --check
+    - poetry run flake8
+    - poetry run mypy . --show-error-codes
+  cache: *pull_cache
+  only: *only
+  except: *exclude_release
+  dependencies:
+    - install
 
-#tag_release:
-#  stage: tag_release
-#  script:
-#    - git remote set-url origin https://root:$SEMANTIC_RELEASE_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
-#    - git config --global user.name "Alfred Pennyworth"
-#    - git config --global user.email "alfred.pennyworth@polymtl.ca"
-#    - poetry run semantic-release publish
-#  cache: *pull_cache
-#  only:
-#    refs:
-#      - main
-#  except: *exclude_release
-#  variables:
-#    GIT_STRATEGY: clone
-#    GITLAB_CI: "true"
-#  dependencies:
-#    - static
-#    - tests
-#
-#publish_backend_package:
-#  stage: publish_backend_package
-#  script:
-#    - poetry build
-#    - poetry publish --repository gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN
-#  cache: *pull_cache
-#  only: *only_release
-#  dependencies:
-#    - install
+tests:
+  stage: test
+  script:
+    - poetry run pytest --cov=backend
+    - poetry run coverage xml
+  cache: *pull_cache
+  only: *only
+  except: *exclude_release
+  dependencies:
+    - install
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+
+tag_release:
+  stage: tag_release
+  script:
+    - git remote set-url origin https://root:$SEMANTIC_RELEASE_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+    - git config --global user.name "Alfred Pennyworth"
+    - git config --global user.email "alfred.pennyworth@polymtl.ca"
+    - poetry run semantic-release publish
+  cache: *pull_cache
+  only:
+    refs:
+      - main
+  except: *exclude_release
+  variables:
+    GIT_STRATEGY: clone
+    GITLAB_CI: "true"
+  dependencies:
+    - static
+    - tests
+
+publish_backend_package:
+  stage: publish_backend_package
+  script:
+    - poetry build
+    - poetry publish --repository gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN
+  cache: *pull_cache
+  only: *only_release
+  dependencies:
+    - install
 
 build_and_push_backend_image:
   stage: build_and_push_backend_image
@@ -119,20 +121,47 @@ build_and_push_backend_image:
   script:
     - docker build -t $IMAGE_TAG --build-arg BACKEND_VERSION=$BACKEND_VERSION --build-arg PYPI_REPO_URL=$PYPI_REPO_URL .
     - docker network create ci_network
-    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --name ci_network --name backend $IMAGE_TAG
-    - sleep 10s
-    - docker run -dit --name fetcher --network ci_network $FETCHER_IMAGE_TAG
-    - docker container ls --all
-    - docker logs backend
-    - docker exec fetcher curl http://127.0.0.1:8000/openapi.json --output /tmp/openapi.json
+    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --network ci_network --name backend $IMAGE_TAG
+    - sleep 5s
+    - docker run -dit --network ci_network --name fetcher $FETCHER_IMAGE_TAG
+    - docker exec fetcher curl http://backend:8000/openapi.json --output /tmp/openapi.json
     - docker cp fetcher:/tmp/openapi.json openapi.json
     - docker rm -f fetcher
     - docker rm -f backend
-    # - docker push $IMAGE_TAG
-  only: *only
+    - docker push $IMAGE_TAG
+  only: *only_release
   dependencies:
     - install
-    # - publish_backend_package
+    - publish_backend_package
   artifacts:
     paths:
       - openapi.json
+
+generate_api_client:
+  stage: generate_api_client
+  image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/openapi-generator-cli:0.0.2
+  variables:
+    NPM_REPO_URL: $CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/packages/npm/
+  script:
+    - >
+      java -jar /openapitools/openapi-generator-cli.jar generate -g typescript-angular -c ci/openapi-generator-config.yaml
+      -o client -i openapi.json --additional-properties=npmRepository=$NPM_REPO_URL
+  only: *only_release
+  artifacts:
+    paths:
+      - client/
+  dependencies:
+    - build_and_push_backend_image
+
+publish_api_client:
+  stage: publish_api_client
+  image: node:lts-bullseye-slim
+  script:
+    - cd client
+    - npm install
+    - npm run build
+    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" > .npmrc
+    - npm publish dist
+  only: *only_release
+  dependencies:
+    - generate_api_client

@@ -5,6 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend import __version__
 from backend.drone_registry import initiate_links
 from backend.routers.argos import router as argos_router
 from backend.routers.common import router as common_router
@@ -12,7 +13,15 @@ from backend.routers.crazyflie import router as crazyflie_router
 
 ONLY_SERVE_OPENAPI_SCHEMA_ENV_VAR: Final = "ONLY_SERVE_OPENAPI_SCHEMA"
 
-app = FastAPI()
+app = FastAPI(
+    title="Backend",
+    description="Serving request from the WebUI to the Crazyflie and Argos drones",
+    servers=[
+        {"url": "http://localhost:8080", "description": "Reverse-proxy endpoint"},
+        {"url": "http://localhost:8000", "description": "Direct endpoint"},
+    ],
+    version=__version__,
+)
 
 app.include_router(argos_router)
 app.include_router(common_router)
