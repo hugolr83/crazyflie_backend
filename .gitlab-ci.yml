@@ -27,7 +27,10 @@ stages:
   - install
   - test
   - tag_release
-  - publish
+  - publish_backend_package
+  - build_and_push_backend_image
+  - generate_api_client
+  - publish_api_client
 
 install:
   stage: install
@@ -93,8 +96,8 @@ tag_release:
     - static
     - tests
 
-publish_backend:
-  stage: publish
+publish_backend_package:
+  stage: publish_backend_package
   script:
     - poetry build
     - poetry publish --repository gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN
@@ -104,20 +107,61 @@ publish_backend:
     - install
 
 build_and_push_backend_image:
-  stage: publish
-  image: docker:stable
+  stage: build_and_push_backend_image
+  image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/dind:0.0.1
   services:
     - docker:dind
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$BACKEND_VERSION
+    FETCHER_IMAGE_TAG: $CI_REGISTRY_IMAGE/schema-fetcher:0.0.1
     # the token in only valid during the job, so it's not a huge security issue
     PYPI_REPO_URL: https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi/simple
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
   script:
     - docker build -t $IMAGE_TAG --build-arg BACKEND_VERSION=$BACKEND_VERSION --build-arg PYPI_REPO_URL=$PYPI_REPO_URL .
+    - docker network create ci_network
+    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --network ci_network --name backend $IMAGE_TAG
+    - sleep 5s
+    - docker run -dit --network ci_network --name fetcher $FETCHER_IMAGE_TAG
+    - docker exec fetcher curl http://backend:8000/openapi.json --output /tmp/openapi.json
+    - docker cp fetcher:/tmp/openapi.json openapi.json
+    - docker rm -f fetcher
+    - docker rm -f backend
     - docker push $IMAGE_TAG
   only: *only_release
   dependencies:
     - install
-    - publish_backend
+    - publish_backend_package
+  artifacts:
+    paths:
+      - openapi.json
+
+generate_api_client:
+  stage: generate_api_client
+  image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/openapi-generator-cli:0.0.2
+  variables:
+    NPM_REPO_URL: $CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/packages/npm/
+  script:
+    - >
+      java -jar /openapitools/openapi-generator-cli.jar generate -g typescript-angular -c ci/openapi-generator-config.yaml
+      -o client -i openapi.json --additional-properties=npmRepository=$NPM_REPO_URL
+  only: *only_release
+  artifacts:
+    paths:
+      - client/
+  dependencies:
+    - build_and_push_backend_image
+
+publish_api_client:
+  stage: publish_api_client
+  image: node:lts-bullseye-slim
+  script:
+    - cd client
+    - npm install
+    - npm run build
+    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" > .npmrc
+    - npm publish dist
+  only: *only_release
+  dependencies:
+    - generate_api_client

@@ -1,0 +1,3 @@
+npmName: "@backend/api-client"
+ngVersion: 12.0.0
+enablePostProcessFile: true
