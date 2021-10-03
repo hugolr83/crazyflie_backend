@@ -33,7 +33,7 @@ app = FastAPI(
     description="Serving request from the WebUI to the Crazyflie and Argos drones 🚀",
     openapi_tags=TAGS_METADATA,
     servers=[
-        {"url": "http://backend:8080/api", "description": "Release endpoint"},
+        {"url": "http://localhost:8080/api", "description": "Release endpoint"},
         {"url": "http://localhost:8000", "description": "Development endpoint"},
     ],
     version=__version__,
