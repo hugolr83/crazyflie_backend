@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import HTTPException
 
-from backend.models.drone_model import DroneType
+from backend.models.drone import DroneType
 
 
 class ResponseException(HTTPException):

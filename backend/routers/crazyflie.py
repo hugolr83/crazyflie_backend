@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from backend.communication.command import Command
 from backend.drone_registry import get_registry
 from backend.exceptions.response import DroneNotFoundException, WrongDroneTypeException
-from backend.models.drone_model import DroneModel, DroneType
+from backend.models.drone import Drone, DroneType
 from backend.utils import generate_responses_documentation
 
 router = APIRouter(prefix="/crazyflie", tags=["crazyflie"])
@@ -12,10 +12,10 @@ router = APIRouter(prefix="/crazyflie", tags=["crazyflie"])
 @router.post(
     "/identify",
     operation_id="identify_crazyflie",
-    response_model=DroneModel,
+    response_model=Drone,
     responses=generate_responses_documentation(DroneNotFoundException, WrongDroneTypeException),
 )
-async def identify(uuid: str) -> DroneModel:
+async def identify(uuid: str) -> Drone:
     """Identify a specific Crazyflie drone. The LEDs of that drone will flash for a couple of seconds."""
     if not (drone := get_registry().get_drone(uuid)):
         raise DroneNotFoundException(uuid)

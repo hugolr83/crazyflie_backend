@@ -10,7 +10,7 @@ class DroneType(str, Enum):
     CRAZYFLIE = "CRAZYFLIE"
 
 
-class DroneModel(BaseModel):
+class Drone(BaseModel):
     uuid: str
     state: DroneState
     type: DroneType
