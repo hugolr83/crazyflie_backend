@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2021-10-03)
+### Feature
+* Rename generated services ([`dbb9fb3`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/dbb9fb32ed55119435ea7de71029b16a338210ae))
+
+### Fix
+* Use the correct release endpoint ([`2f2f13f`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/2f2f13fe6caf31744fab57a42d4b381a709d629d))
+
 ## v0.8.0 (2021-10-03)
 ### Feature
 * Removed /api and added more Swagger documentation ([`38523e5`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/38523e540ded5598f2e1f3b4a7d678f650986331))
