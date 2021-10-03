@@ -108,7 +108,7 @@ publish_backend_package:
 
 build_and_push_backend_image:
   stage: build_and_push_backend_image
-  image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/dind:0.0.1
+  image: docker:latest
   services:
     - docker:dind
   variables:
@@ -141,7 +141,7 @@ generate_api_client:
   stage: generate_api_client
   image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/openapi-generator-cli:0.0.2
   variables:
-    NPM_REPO_URL: $CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/packages/npm/
+    NPM_REPO_URL: $CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/npm/
   script:
     - >
       java -jar /openapitools/openapi-generator-cli.jar generate -g typescript-angular -c ci/openapi-generator-config.yaml
