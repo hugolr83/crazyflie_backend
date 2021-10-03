@@ -118,9 +118,10 @@ build_and_push_backend_image:
   script:
     - docker build -t $IMAGE_TAG --build-arg BACKEND_VERSION=$BACKEND_VERSION --build-arg PYPI_REPO_URL=$PYPI_REPO_URL .
     - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 -p 8000:8000 --name backend $IMAGE_TAG
-    - sleep 10s
-    - curl http://docker:8000/openapi.json --output openapi.json
-    - docker stop backend
+    - CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAdress}}{{end}}' backend)
+    - sleep 15s
+    - curl http://$CONTAINER_IP:8000/openapi.json --output openapi.json
+    - docker rm -f backend
     # - docker push $IMAGE_TAG
   only: *only
   dependencies:
