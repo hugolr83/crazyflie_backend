@@ -121,7 +121,8 @@ build_and_push_backend_image:
     - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 -p 8000:8000 --name backend $IMAGE_TAG
     - sleep 15s
     - CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' backend)
-    - curl $CONTAINER_IP:8000/openapi.json --output openapi.json
+    - echo $CONTAINER_IP
+    - curl http://$CONTAINER_IP:8000/openapi.json --output openapi.json
     - docker rm -f backend
     # - docker push $IMAGE_TAG
   only: *only
