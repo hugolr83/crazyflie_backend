@@ -25,28 +25,28 @@ image: registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf39
 
 stages:
   - install
-  - test
-  - tag_release
-  - publish_backend_package
+#  - test
+#  - tag_release
+#  - publish_backend_package
   - build_and_push_backend_image
 
-#install:
-#  stage: install
-#  script:
-#    - poetry config virtualenvs.in-project true
-#    - poetry install --no-root
-#    - echo "BACKEND_VERSION=$(poetry version --short)" >> install.env
-#  cache:
-#  - key:
-#      files:
-#        - poetry.lock
-#    paths:
-#      - .venv
-#    policy: pull-push
-#  only: *only
-#  artifacts:
-#    reports:
-#      dotenv: install.env
+install:
+  stage: install
+  script:
+    - poetry config virtualenvs.in-project true
+    - poetry install --no-root
+    - echo "BACKEND_VERSION=$(poetry version --short)" >> install.env
+  cache:
+  - key:
+      files:
+        - poetry.lock
+    paths:
+      - .venv
+    policy: pull-push
+  only: *only
+  artifacts:
+    reports:
+      dotenv: install.env
 
 #static:
 #  stage: test
@@ -75,34 +75,34 @@ stages:
 #    reports:
 #      cobertura: coverage.xml
 
-tag_release:
-  stage: tag_release
-  script:
-    - git remote set-url origin https://root:$SEMANTIC_RELEASE_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
-    - git config --global user.name "Alfred Pennyworth"
-    - git config --global user.email "alfred.pennyworth@polymtl.ca"
-    - poetry run semantic-release publish
-  cache: *pull_cache
-  only:
-    refs:
-      - main
-  except: *exclude_release
-  variables:
-    GIT_STRATEGY: clone
-    GITLAB_CI: "true"
-  dependencies:
-    - static
-    - tests
-
-publish_backend_package:
-  stage: publish_backend_package
-  script:
-    - poetry build
-    - poetry publish --repository gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN
-  cache: *pull_cache
-  only: *only_release
-  dependencies:
-    - install
+#tag_release:
+#  stage: tag_release
+#  script:
+#    - git remote set-url origin https://root:$SEMANTIC_RELEASE_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+#    - git config --global user.name "Alfred Pennyworth"
+#    - git config --global user.email "alfred.pennyworth@polymtl.ca"
+#    - poetry run semantic-release publish
+#  cache: *pull_cache
+#  only:
+#    refs:
+#      - main
+#  except: *exclude_release
+#  variables:
+#    GIT_STRATEGY: clone
+#    GITLAB_CI: "true"
+#  dependencies:
+#    - static
+#    - tests
+#
+#publish_backend_package:
+#  stage: publish_backend_package
+#  script:
+#    - poetry build
+#    - poetry publish --repository gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN
+#  cache: *pull_cache
+#  only: *only_release
+#  dependencies:
+#    - install
 
 build_and_push_backend_image:
   stage: build_and_push_backend_image
