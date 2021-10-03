@@ -58,11 +58,11 @@ name = "backend"
 version = "0.3.0"
 description = "Backend handling communications between clients and drones and data persistance"
 authors = [
+    "William Trépanier <william.trepanier@polymtl.ca>",
     "Hugo Lachieze-Rey <hugo.lachieze-rey@polymtl.ca>",
     "Pier-Luc Tanguay <pl.tanguay@polymtl.ca>",
     "Sami Sadfa <sami.sadfa@polymtl.ca>",
     "Wail Ayad <abderrahmane-wail.ayad@polymtl.ca>",
-    "William Trépanier <william.trepanier@polymtl.ca>",
 ]
 
 [tool.poetry.dependencies]
@@ -94,7 +94,6 @@ commit_author = "Alfred Pennyworth <alfred.pennyworth@polymtl.ca>"
 hvcs = "gitlab"
 upload_to_pypi = false
 upload_to_release = false
-
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

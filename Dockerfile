@@ -1,20 +1,13 @@
 FROM python:3.9-slim-bullseye
 
-# Install curl
-RUN apt-get update && apt-get install curl libusb-1.0-0 -y
+ARG BACKEND_VERSION
+ARG PYPI_REPO_URL
 
-# Install Poetry
-ENV POETRY_HOME="/opt/poetry"
-ENV PATH="$POETRY_HOME/bin:$PATH"
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+# Install dependencies
+RUN apt-get update && apt-get install libusb-1.0-0 -y
 
-WORKDIR /app
-
-COPY pyproject.toml poetry.lock ./
-COPY backend ./backend
-
-RUN poetry config virtualenvs.create false
-RUN poetry install --no-dev
+# Install the package
+RUN pip install backend==$BACKEND_VERSION --index-url $PYPI_REPO_URL --no-cache-dir
 
 EXPOSE 8000
 ENTRYPOINT ["uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
