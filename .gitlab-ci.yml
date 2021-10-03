@@ -34,6 +34,7 @@ install:
   script:
     - poetry config virtualenvs.in-project true
     - poetry install --no-root
+    - echo "BACKEND_VERSION=$(poetry version --short)" >> install.env
   cache:
   - key:
       files:
@@ -42,6 +43,9 @@ install:
       - .venv
     policy: pull-push
   only: *only
+  artifacts:
+    reports:
+      dotenv: install.env
 
 static:
   stage: test
@@ -98,3 +102,22 @@ publish_backend:
   only: *only_release
   dependencies:
     - install
+
+build_and_push_backend_image:
+  stage: publish
+  image: docker:stable
+  services:
+    - docker:dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$BACKEND_VERSION
+    # the token in only valid during the job, so it's not a huge security issue
+    PYPI_REPO_URL: https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi/simple
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
+  script:
+    - docker build -t $IMAGE_TAG --build-arg BACKEND_VERSION=$BACKEND_VERSION --build-arg PYPI_REPO_URL=$PYPI_REPO_URL .
+    - docker push $IMAGE_TAG
+  only: *only_release
+  dependencies:
+    - install
+    - publish_backend
