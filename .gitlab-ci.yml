@@ -146,7 +146,7 @@ publish_api_client:
     - cd client
     - npm install
     - npm run build
-    - echo "//$NPM_REPO_URL:_authToken=$CI_JOB_TOKEN" > .npmrc
+    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" > .npmrc
     - npm publish dist
   only: *only_release
   dependencies:
