@@ -55,7 +55,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "backend"
-version = "0.7.0"
+version = "0.8.0"
 description = "Backend handling communications between clients and drones and data persistance"
 authors = [
     "William Trépanier <william.trepanier@polymtl.ca>",

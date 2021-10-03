@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2021-10-03)
+### Feature
+* Removed /api and added more Swagger documentation ([`38523e5`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/38523e540ded5598f2e1f3b4a7d678f650986331))
+
 ## v0.7.0 (2021-10-03)
 ### Feature
 * Moved all the endpoints under /api to simplify reverse proxy setup ([`7aa3d8f`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/7aa3d8f670d416e850d1e30b6f50f4d0664236ec))
