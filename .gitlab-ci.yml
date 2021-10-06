@@ -109,12 +109,15 @@ build_and_push_backend_image:
     - docker rm -f fetcher
     - docker rm -f backend
     - docker push $IMAGE_TAG
+    - echo "BACKEND_IMAGE_TAG=$IMAGE_TAG" >> build.env
   only: *release
   dependencies:
     - install
   artifacts:
     paths:
       - openapi.json
+    reports:
+      dotenv: build.env
 
 generate_api_client:
   stage: generate_api_client
@@ -153,3 +156,5 @@ update_docker_image_tag:
   script:
     - update-tag --update-tag $IMAGE_TAG --repo-url $REPO_URL
   only: *release
+  dependencies:
+    - build_and_push_backend_image
