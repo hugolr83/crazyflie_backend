@@ -8,20 +8,14 @@ image:  $CI_REGISTRY_IMAGE/ci:0.0.2
       - .venv
     policy: pull
 
-.only: &only
+.only: &main_and_mr
   refs:
     - main
     - merge_requests
 
-.except: &exclude_release
-  changes:
-    - CHANGELOG.md
-
-.only_release: &only_release
-  refs:
-    - main
+.release: &release
   variables:
-    - $CI_COMMIT_AUTHOR == "Alfred Pennyworth <alfred.pennyworth@polymtl.ca>"
+    - '$CI_COMMIT_AUTHOR == "Alfred Pennyworth <alfred.pennyworth@polymtl.ca>" && $CI_COMMIT_BRANCH == "main"'
 
 stages:
   - install
@@ -30,6 +24,7 @@ stages:
   - build_and_push_backend_image
   - generate_api_client
   - publish_api_client
+  - update_docker_image_tag
 
 install:
   stage: install
@@ -44,7 +39,7 @@ install:
     paths:
       - .venv
     policy: pull-push
-  only: *only
+  only: *main_and_mr
   artifacts:
     reports:
       dotenv: install.env
@@ -56,8 +51,8 @@ static:
     - poetry run flake8
     - poetry run mypy . --show-error-codes
   cache: *pull_cache
-  only: *only
-  except: *exclude_release
+  only: *main_and_mr
+  except: *release
   dependencies:
     - install
 
@@ -67,8 +62,8 @@ tests:
     - poetry run pytest --cov=backend --junitxml=report.xml
     - poetry run coverage xml
   cache: *pull_cache
-  only: *only
-  except: *exclude_release
+  only: *main_and_mr
+  except: *release
   dependencies:
     - install
   coverage: '/^TOTAL.+?(\d+\%)$/'
@@ -88,13 +83,10 @@ tag_release:
   only:
     refs:
       - main
-  except: *exclude_release
+  except: *release
   variables:
     GIT_STRATEGY: clone
     GITLAB_CI: "true"
-  dependencies:
-    - static
-    - tests
 
 build_and_push_backend_image:
   stage: build_and_push_backend_image
@@ -117,7 +109,7 @@ build_and_push_backend_image:
     - docker rm -f fetcher
     - docker rm -f backend
     - docker push $IMAGE_TAG
-  only: *only_release
+  only: *release
   dependencies:
     - install
   artifacts:
@@ -133,7 +125,7 @@ generate_api_client:
     - >
       java -jar /openapitools/openapi-generator-cli.jar generate -g typescript-angular -c ci/openapi-generator-config.yaml
       -o client -i openapi.json --additional-properties=npmRepository=$NPM_REPO_URL
-  only: *only_release
+  only: *release
   artifacts:
     paths:
       - client/
@@ -149,6 +141,15 @@ publish_api_client:
     - npm run build
     - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" > .npmrc
     - npm publish dist
-  only: *only_release
+  only: *release
   dependencies:
     - generate_api_client
+
+update_docker_image_tag:
+  stage: update_docker_image_tag
+  image: wtrep/update-tag:0.0.1
+  variables:
+    REPO_URL: https://oauth2:$IMAGE_TAG_TOKEN@gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-principal.git
+  script:
+    - update-tag --update-tag $IMAGE_TAG --repo-url
+  only: *release
