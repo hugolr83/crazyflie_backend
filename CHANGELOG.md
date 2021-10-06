@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.1 (2021-10-06)
+### Fix
+* Fixed correct docker-image parameter ([`2fde20a`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/2fde20a14e3018d6899a316dc3fba45309fd4a66))
+* Added missing dependency ([`a0b4599`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/a0b4599580cbdda7186eeef152a7be049bfdeedf))
+
 ## v1.2.0 (2021-10-06)
 ### Feature
 * Added automatic Docker image tag update ([`a0ddcf3`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/a0ddcf35847dbe4bfa1194aa002222bea2703f08))
