@@ -154,6 +154,8 @@ update_docker_image_tag:
   variables:
     REPO_URL: https://oauth2:$IMAGE_TAG_TOKEN@gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-principal.git
   script:
+    - git config --global user.name "Alfred Pennyworth"
+    - git config --global user.email "alfred.pennyworth@polymtl.ca"
     - update-tag --docker-image $BACKEND_IMAGE_TAG --repo-url $REPO_URL
   only: *release
   dependencies:
