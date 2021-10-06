@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.2 (2021-10-06)
+### Fix
+* Added name to Commit ([`123d058`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/123d058f60d406f2c7040b4e8fe994480a5e2a13))
+
 ## v1.2.1 (2021-10-06)
 ### Fix
 * Fixed correct docker-image parameter ([`2fde20a`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/2fde20a14e3018d6899a316dc3fba45309fd4a66))
