@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2021-10-06)
+### Feature
+* Added automatic Docker image tag update ([`a0ddcf3`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/a0ddcf35847dbe4bfa1194aa002222bea2703f08))
+
+### Fix
+* Added missing repo url ([`0f85c30`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/0f85c3071959d531ca953ea70d6ae94dbcc6414a))
+
 ## v1.1.0 (2021-10-06)
 ### Feature
 * Add junit report in Gitlab ([`786dd29`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/786dd29eefff693f145ab97666702b8856d1bc85))
