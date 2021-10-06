@@ -64,7 +64,7 @@ static:
 tests:
   stage: test
   script:
-    - poetry run pytest --cov=backend
+    - poetry run pytest --cov=backend --junitxml=report.xml
     - poetry run coverage xml
   cache: *pull_cache
   only: *only
@@ -75,6 +75,7 @@ tests:
   artifacts:
     reports:
       cobertura: coverage.xml
+      junit: report.xml
 
 tag_release:
   stage: tag_release
