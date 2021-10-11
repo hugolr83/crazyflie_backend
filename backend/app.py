@@ -2,16 +2,17 @@ import os
 from typing import Final
 
 import uvicorn
+from coveo_settings import BoolSetting
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend import __version__
-from backend.drone_registry import initiate_links
+from backend.drone_registry import get_registry
 from backend.routers.argos import router as argos_router
 from backend.routers.common import router as common_router
 from backend.routers.crazyflie import router as crazyflie_router
 
-ONLY_SERVE_OPENAPI_SCHEMA_ENV_VAR: Final = "ONLY_SERVE_OPENAPI_SCHEMA"
+ONLY_SERVE_OPENAPI_SCHEMA: Final = BoolSetting("only_serve_openapi_schema", fallback=False)
 
 TAGS_METADATA: Final = [
     {
@@ -50,8 +51,8 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event() -> None:
-    if not os.getenv(ONLY_SERVE_OPENAPI_SCHEMA_ENV_VAR):
-        await initiate_links()
+    if not bool(ONLY_SERVE_OPENAPI_SCHEMA):
+        await get_registry().initiate()
 
 
 if __name__ == "__main__":
