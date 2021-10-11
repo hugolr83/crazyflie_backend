@@ -4,9 +4,9 @@ from typing import Optional
 from fastapi import APIRouter
 
 from backend.communication.command import Command
-from backend.registered_drone import RegisteredDrone
 from backend.drone_registry import get_registry
 from backend.models.drone import Drone, DroneType
+from backend.registered_drone import RegisteredDrone
 
 router = APIRouter(tags=["common"])
 

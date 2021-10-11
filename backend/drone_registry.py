@@ -1,6 +1,5 @@
 import asyncio
 import itertools
-import itertools
 import uuid
 from asyncio import Queue
 from dataclasses import dataclass, field
@@ -9,13 +8,13 @@ from itertools import count, islice
 from typing import Final, Generator, Optional
 
 from cflib import crtp
-from coveo_settings import StringSetting, IntSetting
+from coveo_settings import IntSetting, StringSetting
 from fastapi.logger import logger
 
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
 from backend.communication.message import Message
-from backend.exceptions.communication import ArgosCommunicationException, CrazyflieCommunicationException
+from backend.exceptions.communication import CrazyflieCommunicationException
 from backend.models.drone import DroneType
 from backend.registered_drone import RegisteredDrone
 
