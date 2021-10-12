@@ -1,6 +1,6 @@
 from asyncio import Event
 from typing import Final, Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 from starlette.testclient import TestClient
