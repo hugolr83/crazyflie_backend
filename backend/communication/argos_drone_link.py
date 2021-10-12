@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import struct
-from asyncio import CancelledError, StreamReader, StreamWriter
+from asyncio import CancelledError, StreamReader, StreamWriter, Task
 from dataclasses import dataclass
+from typing import Optional
 
 from fastapi.logger import logger
 
 from backend.communication.command import Command
-from backend.communication.drone_link import DroneLink, InboundMessageCallable
+from backend.communication.drone_link import DroneLink, InboundLogMessageCallable
 from backend.exceptions.communication import ArgosCommunicationException
 
 
@@ -18,11 +19,12 @@ class ArgosDroneLink(DroneLink):
     argos_port: int
     reader: StreamReader
     writer: StreamWriter
-    on_inbound_message: InboundMessageCallable
+    on_inbound_message: InboundLogMessageCallable
+    incoming_message_task: Optional[Task] = None
 
     @classmethod
     async def create(
-        cls, argos_endpoint: str, argos_port: int, on_inbound_message: InboundMessageCallable
+        cls, argos_endpoint: str, argos_port: int, on_inbound_message: InboundLogMessageCallable
     ) -> ArgosDroneLink:
         try:
             reader, writer = await asyncio.open_connection(argos_endpoint, argos_port)
@@ -34,7 +36,12 @@ class ArgosDroneLink(DroneLink):
         return adapter
 
     async def initiate(self) -> None:
-        asyncio.create_task(self.process_incoming_message())
+        self.incoming_message_task = asyncio.create_task(self.process_incoming_message())
+
+    async def terminate(self) -> None:
+        if self.incoming_message_task:
+            self.incoming_message_task.cancel()
+        self.writer.close()
 
     async def process_incoming_message(self) -> None:
         try:

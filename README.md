@@ -13,7 +13,6 @@ Commandes:
 ```bash
 poetry install
 poetry shell
-sh setup-env.sh
 python backend/app.py
 ```
 
@@ -26,3 +25,9 @@ Commandes:
 docker build . -t registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/backend:<version>
 docker push registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/backend:<version>
 ```
+
+## Rouler l'image en local
+```bash
+docker run -p 8000:8000 registry.gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/backend:<version>
+```
+Naviger ensuite à [http://localhost:8000/docs](http://localhost:8000/docs) (et non 0.0.0.0) et choisir l'endpoint dev dans la liste

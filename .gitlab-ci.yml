@@ -101,7 +101,7 @@ build_and_push_backend_image:
   script:
     - docker build -t $IMAGE_TAG .
     - docker network create ci_network
-    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=1 --network ci_network --name backend $IMAGE_TAG
+    - docker run -d -e ONLY_SERVE_OPENAPI_SCHEMA=true --network ci_network --name backend $IMAGE_TAG
     - sleep 5s
     - docker run -dit --network ci_network --name fetcher $FETCHER_IMAGE_TAG
     - docker exec fetcher curl http://backend:8000/openapi.json --output /tmp/openapi.json

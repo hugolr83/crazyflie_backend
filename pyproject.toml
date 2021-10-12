@@ -35,23 +35,13 @@ exclude = '''
   | dist
 )
 '''
+ignore_missing_imports = true
 pretty = true
 show_column_numbers = true
 strict_optional = true
 warn_redundant_casts = true
 warn_return_any = true
 warn_unused_ignores = true
-
-[[tool.mypy.overrides]]
-module = [
-    # The Crazyflie lib doesn't provide type annotations. If we are motivated, I might go write a stub only for what we use
-    "cflib",
-    "cflib.crazyflie",
-    "cflib.crtp",
-    # Uvicorn is really just the entrypoint for FastAPI so Mypy wouldn't probably find anything anyway
-    "uvicorn",
-]
-ignore_missing_imports = true
 
 [tool.poetry]
 name = "backend"
@@ -68,10 +58,16 @@ authors = [
 [tool.poetry.dependencies]
 python = "^3.9"
 autoname = "^2.0.0"
+colorama = "^0.4.4"
 cflib = "^0.1.16"
-fastapi = "^0.68.1"
+coveo-functools = "^2.0.10"
+coveo-settings = "^2.0.9"
+fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
 pydantic = "^1.8.2"
+PyYAML = "^5.4.1"
+watchgod = "^0.7"
+wsproto = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "0.910"  # Mypy is pinned so that it doesn't randomly break our main branch CI
@@ -82,10 +78,6 @@ pytest_async = "^0.1.1"
 pytest-cov = "^2.12.1"
 python-semantic-release = "^7.19.2"
 requests = "^2.26.0"
-
-[[tool.poetry.source]]
-name = "gitlab"
-url = "https://gitlab.com/api/v4/projects/29618275/packages/pypi"
 
 [tool.semantic_release]
 version_variable = ["backend/__init__.py:__version__", "pyproject.toml:version"]

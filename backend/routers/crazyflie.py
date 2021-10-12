@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
 from backend.communication.command import Command
-from backend.drone_registry import get_registry
 from backend.exceptions.response import DroneNotFoundException, WrongDroneTypeException
 from backend.models.drone import Drone, DroneType
-from backend.utils import generate_responses_documentation
+from backend.registry import get_registry
+from backend.routers.utils import generate_responses_documentation
 
 router = APIRouter(prefix="/crazyflie", tags=["crazyflie"])
 
