@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections import Callable, Coroutine
-from typing import Any
+from typing import Any, Callable, Coroutine
 
 from backend.communication.command import Command
 
