@@ -13,7 +13,6 @@ Commandes:
 ```bash
 poetry install
 poetry shell
-sh setup-env.sh
 python backend/app.py
 ```
 

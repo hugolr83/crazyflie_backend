@@ -1,5 +1,0 @@
-#!/bin/bash
-
-export ARGOS_DRONES_STARTING_PORT=3995
-export ARGOS_NUMBER_OF_DRONES=2
-export ARGOS_ENDPOINT=localhost
