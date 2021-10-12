@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from typing import Final
 
 from coveo_settings import BoolSetting
 from starlette.websockets import WebSocket
@@ -10,7 +9,6 @@ from backend.models.drone import Drone
 from backend.registry import get_registry
 
 CRAZYFLIE_ENABLE_HEARTBEAT = BoolSetting("crazyflie.enable_heartbeat", fallback=True)
-HEARTBEAT_TIMEOUT_SECONDS: Final = 0.2
 
 
 async def send_message_to_socket(socket: WebSocket, drone: Drone) -> None:
