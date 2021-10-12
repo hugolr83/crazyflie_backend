@@ -19,3 +19,4 @@ async def terminate_tasks() -> None:
     registry = get_registry()
     for task in registry.backend_tasks:
         await task.terminate()
+    registry.backend_tasks.clear()
