@@ -13,7 +13,7 @@ from fastapi.logger import logger
 
 from backend.communication.command import Command
 from backend.communication.drone_link import DroneLink, InboundLogMessageCallable
-from backend.communication.log_message import CRAZYFLIE_LOG_CONFIGS
+from backend.communication.log_message import generate_log_configs
 from backend.exceptions.communication import CrazyflieCommunicationException
 
 CRAZYFLIE_CONNECTION_TIMEOUT: Final = 15
@@ -29,13 +29,7 @@ class CrazyflieDroneLink(DroneLink):
 
     @classmethod
     async def create(cls, uri: str, on_inbound_log_message: InboundLogMessageCallable) -> CrazyflieDroneLink:
-        log_configs: list[LogConfig] = []
-        for configuration in CRAZYFLIE_LOG_CONFIGS:
-            log_config = LogConfig(configuration.name, configuration.period_ms)
-            for variable in configuration.parameters:
-                log_config.add_variable(variable.name, variable.fetch_as)
-            log_configs.append(log_config)
-
+        log_configs = list(generate_log_configs())
         link = cls(Crazyflie(), uri, log_configs, Event(), on_inbound_log_message)
         await link.initiate()
         return link

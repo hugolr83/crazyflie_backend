@@ -4,7 +4,7 @@ import json
 import logging
 from asyncio import Queue
 from dataclasses import dataclass
-from typing import Any, Final, Type
+from typing import Any, Final, Generator, Type
 
 from cflib.crazyflie.log import LogConfig
 from coveo_functools import flex
@@ -84,6 +84,14 @@ CRAZYFLIE_LOG_CONFIGS: Final = [
         RangeLogMessage,
     ),
 ]
+
+
+def generate_log_configs() -> Generator[LogConfig, None, None]:
+    for configuration in CRAZYFLIE_LOG_CONFIGS:
+        log_config = LogConfig(configuration.name, configuration.period_ms)
+        for variable in configuration.parameters:
+            log_config.add_variable(variable.name, variable.fetch_as)
+        yield log_config
 
 
 async def on_incoming_crazyflie_log_message(
