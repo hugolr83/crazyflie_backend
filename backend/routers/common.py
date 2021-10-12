@@ -4,19 +4,12 @@ from typing import Optional
 from fastapi import APIRouter, WebSocket
 
 from backend.communication.command import Command
+from backend.communication.communication import send_command_to_all_drones
 from backend.models.drone import Drone, DroneType
-from backend.registered_drone import RegisteredDrone
 from backend.registry import get_registry
 from backend.tasks.inbound_websocket_heartbeat_task import process_inbound_heartbeat
 
 router = APIRouter(tags=["common"])
-
-
-async def send_command_to_all_drones(command: Command, all_drones: list[RegisteredDrone]) -> list[Drone]:
-    # TODO: Handle exception
-    await asyncio.gather(*(drone.link.send_command(command) for drone in all_drones))
-
-    return [drone.to_model() for drone in all_drones]
 
 
 @router.get("/drones", operation_id="get_drones", response_model=list[Drone])
