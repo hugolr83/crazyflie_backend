@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from fastapi.logger import logger
 
 from backend.communication.command import Command
-from backend.communication.drone_link import DroneLink, InboundMessageCallable
+from backend.communication.drone_link import DroneLink, InboundLogMessageCallable
 from backend.exceptions.communication import ArgosCommunicationException
 
 
@@ -18,11 +18,11 @@ class ArgosDroneLink(DroneLink):
     argos_port: int
     reader: StreamReader
     writer: StreamWriter
-    on_inbound_message: InboundMessageCallable
+    on_inbound_message: InboundLogMessageCallable
 
     @classmethod
     async def create(
-        cls, argos_endpoint: str, argos_port: int, on_inbound_message: InboundMessageCallable
+        cls, argos_endpoint: str, argos_port: int, on_inbound_message: InboundLogMessageCallable
     ) -> ArgosDroneLink:
         try:
             reader, writer = await asyncio.open_connection(argos_endpoint, argos_port)
@@ -39,7 +39,7 @@ class ArgosDroneLink(DroneLink):
     async def process_incoming_message(self) -> None:
         try:
             while data := await self.reader.readline():
-                await self.on_inbound_message(data)
+                await self.on_inbound_message(data, None, None)
         except CancelledError:
             logger.exception("Process incoming message task was cancelled")
 

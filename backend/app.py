@@ -6,10 +6,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend import __version__
-from backend.drone_registry import get_registry
+from backend.communication.initiate import initiate_links
 from backend.routers.argos import router as argos_router
 from backend.routers.common import router as common_router
 from backend.routers.crazyflie import router as crazyflie_router
+from backend.tasks.initiate import initiate_tasks
 
 ONLY_SERVE_OPENAPI_SCHEMA: Final = BoolSetting("only_serve_openapi_schema", fallback=False)
 
@@ -51,7 +52,8 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event() -> None:
     if not bool(ONLY_SERVE_OPENAPI_SCHEMA):
-        await get_registry().initiate()
+        await initiate_links()
+        await initiate_tasks()
 
 
 if __name__ == "__main__":

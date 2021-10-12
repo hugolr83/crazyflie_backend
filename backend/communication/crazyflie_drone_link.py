@@ -8,10 +8,12 @@ from functools import partial
 from typing import Any, Final
 
 from cflib.crazyflie import Crazyflie
+from cflib.crazyflie.log import LogConfig
 from fastapi.logger import logger
 
 from backend.communication.command import Command
-from backend.communication.drone_link import DroneLink, InboundMessageCallable
+from backend.communication.drone_link import DroneLink, InboundLogMessageCallable
+from backend.communication.log_message import CRAZYFLIE_LOG_CONFIGS
 from backend.exceptions.communication import CrazyflieCommunicationException
 
 CRAZYFLIE_CONNECTION_TIMEOUT: Final = 15
@@ -21,12 +23,20 @@ CRAZYFLIE_CONNECTION_TIMEOUT: Final = 15
 class CrazyflieDroneLink(DroneLink):
     crazyflie: Crazyflie
     uri: str
+    log_configs: list[LogConfig]
     connection_established: Event
-    on_inbound_message: InboundMessageCallable
+    on_inbound_log_message: InboundLogMessageCallable
 
     @classmethod
-    async def create(cls, uri: str, on_inbound_message: InboundMessageCallable) -> CrazyflieDroneLink:
-        link = cls(Crazyflie(), uri, Event(), on_inbound_message)
+    async def create(cls, uri: str, on_inbound_log_message: InboundLogMessageCallable) -> CrazyflieDroneLink:
+        log_configs: list[LogConfig] = []
+        for configuration in CRAZYFLIE_LOG_CONFIGS:
+            log_config = LogConfig(configuration.name, configuration.period_ms)
+            for variable in configuration.parameters:
+                log_config.add_variable(variable.name, variable.fetch_as)
+            log_configs.append(log_config)
+
+        link = cls(Crazyflie(), uri, log_configs, Event(), on_inbound_log_message)
         await link.initiate()
         return link
 
@@ -39,13 +49,18 @@ class CrazyflieDroneLink(DroneLink):
         self.crazyflie.disconnected.add_callback(partial(self._on_disconnected, loop=loop))
         self.crazyflie.connection_failed.add_callback(partial(self._on_connection_failed, loop=loop))
         self.crazyflie.connection_lost.add_callback(partial(self._on_connection_lost, loop=loop))
-        self.crazyflie.appchannel.packet_received.add_callback(partial(self._on_incoming_message, loop=loop))
+        for log_config in self.log_configs:
+            log_config.data_received_cb.add_callback(partial(self._on_incoming_log_message, loop=loop))
         await asyncio.to_thread(self.crazyflie.open_link, self.uri)
 
         try:
             await asyncio.wait_for(self.connection_established.wait(), timeout=CRAZYFLIE_CONNECTION_TIMEOUT)
         except asyncio.TimeoutError as e:
             raise CrazyflieCommunicationException(self.uri) from e
+
+        for log_config in self.log_configs:
+            self.crazyflie.log.add_config(log_config)
+            await asyncio.to_thread(log_config.start)
 
     def _on_connected(self, link_uri: str, loop: AbstractEventLoop) -> None:
         logger.error(f"Crazyflie {link_uri} is connected")
@@ -64,8 +79,12 @@ class CrazyflieDroneLink(DroneLink):
         logger.error(f"Crazyflie {link_uri} is disconnected")
         loop.call_soon_threadsafe(self.connection_established.clear)
 
-    def _on_incoming_message(self, packet: bytes, loop: AbstractEventLoop) -> None:
-        asyncio.run_coroutine_threadsafe(self.on_inbound_message(packet), loop)
+    def _on_incoming_log_message(
+        self, timestamp: int, data: dict[str, Any], log_config: LogConfig, loop: AbstractEventLoop
+    ) -> None:
+        asyncio.run_coroutine_threadsafe(
+            self.on_inbound_log_message(timestamp=timestamp, data=data, log_config=log_config), loop
+        )
 
     async def send_command(self, command: Command) -> None:
         await asyncio.wait_for(self.connection_established.wait(), timeout=CRAZYFLIE_CONNECTION_TIMEOUT)

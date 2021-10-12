@@ -6,7 +6,7 @@ from typing import Any
 
 from backend.communication.command import Command
 
-InboundMessageCallable = Callable[[bytes], Coroutine[Any, Any, None]]
+InboundLogMessageCallable = Callable[..., Coroutine[Any, Any, None]]
 
 
 class DroneLink(ABC):

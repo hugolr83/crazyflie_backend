@@ -1,12 +1,12 @@
 import asyncio
 from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, WebSocket
 
 from backend.communication.command import Command
-from backend.drone_registry import get_registry
 from backend.models.drone import Drone, DroneType
 from backend.registered_drone import RegisteredDrone
+from backend.registry import get_registry
 
 router = APIRouter(tags=["common"])
 
@@ -42,3 +42,9 @@ async def end_mission(drone_type: DroneType) -> list[Drone]:
 async def return_to_base(drone_type: DroneType) -> list[Drone]:
     """Return to base for a specific drone type. Will communicate with all registered drones of that type."""
     return await send_command_to_all_drones(Command.RETURN_TO_BASE, list(get_registry().get_drones(drone_type)))
+
+
+@router.websocket("/drone_pulses")
+async def drone_pulses(websocket: WebSocket) -> None:
+    """Start a WebSocket that subscribe to drone state updates"""
+    await get_registry().register_socket(websocket)
