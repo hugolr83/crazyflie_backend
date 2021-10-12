@@ -97,7 +97,7 @@ class UpdateDroneTestCase:
     ],
 )
 @pytest.mark.parametrize("drone_type", ["ARGOS", "CRAZYFLIE"])
-def test_start_exploration(
+def test_change_drone_state_commands(
     get_registry_mock: Registry,
     test_case: UpdateDroneTestCase,
     drone_type: str,
