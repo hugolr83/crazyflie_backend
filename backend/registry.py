@@ -60,9 +60,6 @@ class Registry:
         return (drone for drone in self.drones.values() if drone.drone_type == DroneType.CRAZYFLIE)
 
 
+@lru_cache(maxsize=None)
 def get_registry() -> Registry:
-    @lru_cache(maxsize=None)
-    def _get_cached_registry() -> Registry:
-        return Registry()
-
-    return _get_cached_registry()
+    return Registry()
