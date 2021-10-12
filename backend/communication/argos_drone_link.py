@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import struct
-from asyncio import CancelledError, StreamReader, StreamWriter
+from asyncio import CancelledError, StreamReader, StreamWriter, Task
 from dataclasses import dataclass
+from typing import Optional
 
 from fastapi.logger import logger
 
@@ -19,6 +20,7 @@ class ArgosDroneLink(DroneLink):
     reader: StreamReader
     writer: StreamWriter
     on_inbound_message: InboundLogMessageCallable
+    incoming_message_task: Optional[Task] = None
 
     @classmethod
     async def create(
@@ -34,7 +36,12 @@ class ArgosDroneLink(DroneLink):
         return adapter
 
     async def initiate(self) -> None:
-        asyncio.create_task(self.process_incoming_message())
+        self.incoming_message_task = asyncio.create_task(self.process_incoming_message())
+
+    async def terminate(self) -> None:
+        if self.incoming_message_task:
+            self.incoming_message_task.cancel()
+        self.writer.close()
 
     async def process_incoming_message(self) -> None:
         try:

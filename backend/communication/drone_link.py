@@ -15,5 +15,9 @@ class DroneLink(ABC):
         ...
 
     @abstractmethod
+    async def terminate(self) -> None:
+        ...
+
+    @abstractmethod
     async def send_command(self, command: Command) -> None:
         ...

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import asyncio
+import shutil
 import struct
+import tempfile
 from asyncio import AbstractEventLoop, Event
 from dataclasses import dataclass
 from functools import partial
+from pathlib import Path
 from typing import Any, Final
 
 from cflib.crazyflie import Crazyflie
@@ -26,11 +29,13 @@ class CrazyflieDroneLink(DroneLink):
     log_configs: list[LogConfig]
     connection_established: Event
     on_inbound_log_message: InboundLogMessageCallable
+    rw_cache: Path
 
     @classmethod
     async def create(cls, uri: str, on_inbound_log_message: InboundLogMessageCallable) -> CrazyflieDroneLink:
         log_configs = list(generate_log_configs())
-        link = cls(Crazyflie(), uri, log_configs, Event(), on_inbound_log_message)
+        rw_cache = Path(tempfile.mkdtemp())
+        link = cls(Crazyflie(rw_cache=str(rw_cache)), uri, log_configs, Event(), on_inbound_log_message, rw_cache)
         await link.initiate()
         return link
 
@@ -55,6 +60,12 @@ class CrazyflieDroneLink(DroneLink):
         for log_config in self.log_configs:
             self.crazyflie.log.add_config(log_config)
             await asyncio.to_thread(log_config.start)
+
+    async def terminate(self) -> None:
+        for log_config in self.log_configs:
+            await asyncio.to_thread(log_config.stop)
+        await asyncio.to_thread(self.crazyflie.close_link)
+        await asyncio.to_thread(shutil.rmtree, self.rw_cache)
 
     def _on_connected(self, link_uri: str, loop: AbstractEventLoop) -> None:
         logger.error(f"Crazyflie {link_uri} is connected")

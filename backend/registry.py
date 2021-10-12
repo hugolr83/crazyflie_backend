@@ -8,14 +8,16 @@ from starlette.websockets import WebSocket
 from backend.communication.log_message import LogMessage
 from backend.models.drone import Drone, DroneType
 from backend.registered_drone import RegisteredDrone
+from backend.tasks.backend_task import BackendTask
 
 
 @dataclass
 class Registry:
     drones: dict[str, RegisteredDrone] = field(default_factory=dict)
+    backend_tasks: list[BackendTask] = field(default_factory=list)
+    pulse_sockets: list[WebSocket] = field(default_factory=list)
     _inbound_log_message_queue: Optional[Queue[LogMessage]] = None
     _output_pulse_queue: Optional[Queue[Drone]] = None
-    pulse_sockets: list[WebSocket] = field(default_factory=list)
 
     def get_drone(self, drone_uuid: str) -> Optional[RegisteredDrone]:
         return self.drones.get(drone_uuid)
@@ -43,12 +45,17 @@ class Registry:
     def register_drone(self, drone: RegisteredDrone) -> None:
         self.drones[drone.uuid] = drone
 
-    async def register_socket(self, socket: WebSocket) -> None:
-        await socket.accept()
+    def register_socket(self, socket: WebSocket) -> None:
         self.pulse_sockets.append(socket)
 
-    async def unregister_socket(self, socket: WebSocket) -> None:
+    def unregister_socket(self, socket: WebSocket) -> None:
         self.pulse_sockets.remove(socket)
+
+    def register_task(self, task: BackendTask) -> None:
+        self.backend_tasks.append(task)
+
+    def unregister_task(self, task: BackendTask) -> None:
+        self.backend_tasks.remove(task)
 
     @property
     def argos_drones(self) -> Generator[RegisteredDrone, None, None]:

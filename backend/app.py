@@ -6,11 +6,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend import __version__
-from backend.communication.initiate import initiate_links
+from backend.communication.communication import initiate_links, terminate_links
 from backend.routers.argos import router as argos_router
 from backend.routers.common import router as common_router
 from backend.routers.crazyflie import router as crazyflie_router
-from backend.tasks.initiate import initiate_tasks
+from backend.tasks.tasks import initiate_tasks, terminate_tasks
 
 ONLY_SERVE_OPENAPI_SCHEMA: Final = BoolSetting("only_serve_openapi_schema", fallback=False)
 
@@ -54,6 +54,13 @@ async def startup_event() -> None:
     if not bool(ONLY_SERVE_OPENAPI_SCHEMA):
         await initiate_links()
         await initiate_tasks()
+
+
+@app.on_event("shutdown")
+async def shutdown_event() -> None:
+    if not bool(ONLY_SERVE_OPENAPI_SCHEMA):
+        await terminate_links()
+        await terminate_tasks()
 
 
 if __name__ == "__main__":
