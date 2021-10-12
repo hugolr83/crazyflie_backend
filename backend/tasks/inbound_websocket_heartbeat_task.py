@@ -26,9 +26,9 @@ class InboundWebsocketHeartbeatTask(BackendTask):
             except asyncio.TimeoutError:
                 logging.warning(f"Websocket on port {self.socket.client.port} timed out")
                 await self.socket.close()
+                registry.unregister_socket(self.socket)
             except (LocalProtocolError, RuntimeError, WebSocketDisconnect):
                 logging.warning(f"Websocket on port {self.socket.client.port} is disconnected")
-            finally:
                 registry.unregister_socket(self.socket)
         except asyncio.CancelledError:
             await self.socket.close()
