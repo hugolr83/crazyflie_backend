@@ -39,7 +39,7 @@ class ArgosDroneLink(DroneLink):
     async def process_incoming_message(self) -> None:
         try:
             while data := await self.reader.readline():
-                await self.on_inbound_message(data, None, None)
+                await self.on_inbound_message(data)
         except CancelledError:
             logger.exception("Process incoming message task was cancelled")
 

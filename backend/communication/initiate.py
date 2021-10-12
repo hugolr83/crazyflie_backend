@@ -12,7 +12,7 @@ from fastapi.logger import logger
 
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
-from backend.communication.log_message import on_incoming_crazyflie_log_message
+from backend.communication.log_message import on_incoming_argos_log_message, on_incoming_crazyflie_log_message
 from backend.exceptions.communication import CrazyflieCommunicationException
 from backend.registered_drone import RegisteredDrone
 from backend.registry import get_registry
@@ -29,9 +29,7 @@ async def initiate_argos_drone_link(drone_port: int) -> None:
     drone_link = await ArgosDroneLink.create(
         str(ARGOS_ENDPOINT),
         drone_port,
-        partial(
-            on_incoming_crazyflie_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue
-        ),
+        partial(on_incoming_argos_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue),
     )
     get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link, Event(), Event()))
 

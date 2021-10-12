@@ -46,5 +46,5 @@ async def return_to_base(drone_type: DroneType) -> list[Drone]:
 
 @router.websocket("/drone_pulses")
 async def drone_pulses(websocket: WebSocket) -> None:
-    """Start a WebSocket that subscribe to drone state updates"""
+    """Start a WebSocket that subscribe to all the pulses from the drones."""
     await get_registry().register_socket(websocket)

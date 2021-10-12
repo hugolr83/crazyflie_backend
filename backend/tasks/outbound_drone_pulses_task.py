@@ -8,7 +8,7 @@ from backend.models.drone import Drone
 from backend.registry import get_registry
 
 CRAZYFLIE_ENABLE_HEARTBEAT = BoolSetting("crazyflie.enable_heartbeat", fallback=True)
-HEARTBEAT_TIMEOUT_SECONDS: Final = 0.5
+HEARTBEAT_TIMEOUT_SECONDS: Final = 0.2
 
 
 async def send_message_to_socket(socket: WebSocket, drone: Drone) -> None:

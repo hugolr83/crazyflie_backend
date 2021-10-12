@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 from asyncio import Queue
 from dataclasses import dataclass
@@ -37,7 +38,7 @@ class RangeLogMessage(LogMessage):
 
 # No need to split packets from Argos simulated drones
 @dataclass
-class CompleteLogMessage(BatteryAndPositionLogMessage, RangeLogMessage):
+class FullLogMessage(BatteryAndPositionLogMessage, RangeLogMessage):
     pass
 
 
@@ -97,3 +98,8 @@ async def on_incoming_crazyflie_log_message(
         await inbound_queue.put(flex.deserialize(value=incoming_data, hint=log_message_type))
     else:
         logging.error(f"LogConfig with name {log_config.name} is unknown")
+
+
+async def on_incoming_argos_log_message(drone_uuid: str, inbound_queue: Queue[LogMessage], data: bytes) -> None:
+    incoming_data = json.loads(data) | {"drone_uuid": drone_uuid}
+    await inbound_queue.put(flex.deserialize(value=incoming_data, hint=FullLogMessage))

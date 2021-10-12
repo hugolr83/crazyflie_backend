@@ -6,7 +6,7 @@ from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.drone_link import DroneLink
 from backend.communication.log_message import (
     BatteryAndPositionLogMessage,
-    CompleteLogMessage,
+    FullLogMessage,
     LogMessage,
     RangeLogMessage,
 )
@@ -54,7 +54,7 @@ class RegisteredDrone:
         self.range_updated.set()
 
     @update_from_log_message.register
-    def _update_all_field(self, log_message: CompleteLogMessage) -> None:
+    def _update_all_field(self, log_message: FullLogMessage) -> None:
         self._update_battery_and_position(log_message)
         self._update_range(log_message)
 
