@@ -2,7 +2,13 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from backend.state import DroneState
+
+class DroneState(str, Enum):
+    WAITING = "WAITING"
+    STARTING = "STARTING"
+    NAVIGATING = "NAVIGATING"
+    CRASHED = "CRASHED"
+    LANDING = "LANDING"
 
 
 class DroneType(str, Enum):

@@ -10,8 +10,7 @@ from backend.communication.log_message import (
     LogMessage,
     RangeLogMessage,
 )
-from backend.models.drone import Drone, DroneBattery, DroneRange, DroneType, DroneVec3
-from backend.state import DroneState
+from backend.models.drone import Drone, DroneBattery, DroneRange, DroneState, DroneType, DroneVec3
 
 
 @dataclass

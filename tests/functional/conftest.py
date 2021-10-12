@@ -8,10 +8,9 @@ from starlette.testclient import TestClient
 from backend.app import app
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
-from backend.models.drone import DroneBattery, DroneRange, DroneVec3
+from backend.models.drone import DroneBattery, DroneRange, DroneState, DroneVec3
 from backend.registered_drone import RegisteredDrone
 from backend.registry import Registry
-from backend.state import DroneState
 
 ARGOS_UUID: Final = "a20b6bfb-ba57-412d-9a45-af331ee6d187"
 CRAZYFLIE_UUID: Final = "b39fb265-7272-4206-bef9-325d25d77414"
