@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from http import HTTPStatus
-from typing import Any, Generator
+from typing import Any, Final, Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -24,56 +24,31 @@ class GetDronesTestCase:
     expected_response: list[dict[str, Any]]
 
 
+ARGOS_DRONE_RESPONSE: Final = {
+    "uuid": ARGOS_UUID,
+    "state": "WAITING",
+    "type": "ARGOS",
+    "battery": {"charge_percentage": 2, "voltage": 3.4},
+    "position": {"x": 1.2, "y": 3.6, "z": 2.53},
+    "range": {"front": 412312, "back": 1223, "up": 134, "left": 2, "right": 18, "bottom": 181},
+}
+
+CRAZYFLIE_DRONE_RESPONSE: Final = {
+    "uuid": CRAZYFLIE_UUID,
+    "state": "CRASHED",
+    "type": "CRAZYFLIE",
+    "battery": {"charge_percentage": 90, "voltage": 4.1},
+    "position": {"x": 99.1, "y": 1919.2, "z": 3.2},
+    "range": {"front": 42661, "back": 123242, "up": 734, "left": 90, "right": 178, "bottom": 922},
+}
+
+
 @pytest.mark.parametrize(
     "test_case",
     [
-        GetDronesTestCase(
-            "",
-            [
-                {
-                    "uuid": ARGOS_UUID,
-                    "state": "WAITING",
-                    "type": "ARGOS",
-                    "battery": {"charge_percentage": 2, "voltage": 3.4},
-                    "position": {"x": 1.2, "y": 3.6, "z": 2.53},
-                    "range": {"front": 412312, "back": 1223, "up": 134, "left": 2, "right": 18, "bottom": 181},
-                },
-                {
-                    "uuid": CRAZYFLIE_UUID,
-                    "state": "CRASHED",
-                    "type": "CRAZYFLIE",
-                    "battery": {"charge_percentage": 90, "voltage": 4.1},
-                    "position": {"x": 99.1, "y": 1919.2, "z": 3.2},
-                    "range": {"front": 42661, "back": 123242, "up": 734, "left": 90, "right": 178, "bottom": 922},
-                },
-            ],
-        ),
-        GetDronesTestCase(
-            "?drone_type=ARGOS",
-            [
-                {
-                    "uuid": ARGOS_UUID,
-                    "state": "WAITING",
-                    "type": "ARGOS",
-                    "battery": {"charge_percentage": 2, "voltage": 3.4},
-                    "position": {"x": 1.2, "y": 3.6, "z": 2.53},
-                    "range": {"front": 412312, "back": 1223, "up": 134, "left": 2, "right": 18, "bottom": 181},
-                }
-            ],
-        ),
-        GetDronesTestCase(
-            "?drone_type=CRAZYFLIE",
-            [
-                {
-                    "uuid": CRAZYFLIE_UUID,
-                    "state": "CRASHED",
-                    "type": "CRAZYFLIE",
-                    "battery": {"charge_percentage": 90, "voltage": 4.1},
-                    "position": {"x": 99.1, "y": 1919.2, "z": 3.2},
-                    "range": {"front": 42661, "back": 123242, "up": 734, "left": 90, "right": 178, "bottom": 922},
-                }
-            ],
-        ),
+        GetDronesTestCase("", [ARGOS_DRONE_RESPONSE, CRAZYFLIE_DRONE_RESPONSE]),
+        GetDronesTestCase("?drone_type=ARGOS", [ARGOS_DRONE_RESPONSE]),
+        GetDronesTestCase("?drone_type=CRAZYFLIE", [CRAZYFLIE_DRONE_RESPONSE]),
     ],
 )
 def test_get_all_drones(get_registry_mock: Registry, test_case: GetDronesTestCase, test_client: TestClient) -> None:
