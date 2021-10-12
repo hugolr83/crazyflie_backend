@@ -2,6 +2,21 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.0 (2021-10-12)
+### Feature
+* Handle gracefully disconnection and task termination on shutdown ([`fb6010b`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/fb6010bee316202cf9d6a32ecd853f18a8e171f9))
+* Moved heartbeat processing into its own task ([`3c657ed`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/3c657ed9867375859ed7569f1d642145f38fcaab))
+* Added support for argos message processing ([`bcf14e4`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/bcf14e484ad88f5739b395d12606eb0686a38950))
+* Added server side event to client for drone telemetry ([`339107c`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/339107c24f59e95776567f968296229a645b1b42))
+* Speed up drone link initialization and removed environment variable ([`4497826`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/4497826dbad1aa265bd0b17be94248c704c143c5))
+
+### Fix
+* Clear tasks array after terminating them ([`8681804`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/8681804329510e2c3829d9d3b18f2bba7d924961))
+* Registry wasn't cached properly ([`153a82d`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/153a82de94ecc27aa391068545b6a3fb737fb2d8))
+
+### Documentation
+* Instruction to run the docker image ([`fc6e986`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/fc6e98612d22df77d7c5349bde331be159e697f8))
+
 ## v1.2.2 (2021-10-06)
 ### Fix
 * Added name to Commit ([`123d058`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/123d058f60d406f2c7040b4e8fe994480a5e2a13))
