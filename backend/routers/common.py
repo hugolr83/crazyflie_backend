@@ -7,6 +7,7 @@ from backend.communication.command import Command
 from backend.models.drone import Drone, DroneType
 from backend.registered_drone import RegisteredDrone
 from backend.registry import get_registry
+from backend.tasks.inbound_websocket_heartbeat_task import process_inbound_heartbeat
 
 router = APIRouter(tags=["common"])
 
@@ -45,6 +46,7 @@ async def return_to_base(drone_type: DroneType) -> list[Drone]:
 
 
 @router.websocket("/drone_pulses")
-async def drone_pulses(websocket: WebSocket) -> None:
+async def drone_pulses(socket: WebSocket) -> None:
     """Start a WebSocket that subscribe to all the pulses from the drones."""
-    await get_registry().register_socket(websocket)
+    await get_registry().register_socket(socket)
+    asyncio.create_task(process_inbound_heartbeat(socket))

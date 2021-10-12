@@ -49,7 +49,6 @@ class Registry:
 
     async def unregister_socket(self, socket: WebSocket) -> None:
         self.pulse_sockets.remove(socket)
-        await socket.close()
 
     @property
     def argos_drones(self) -> Generator[RegisteredDrone, None, None]:

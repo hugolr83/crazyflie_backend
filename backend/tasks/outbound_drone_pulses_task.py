@@ -1,8 +1,10 @@
 import asyncio
+import logging
 from typing import Final
 
 from coveo_settings import BoolSetting
-from starlette.websockets import WebSocket, WebSocketDisconnect
+from starlette.websockets import WebSocket
+from wsproto.utilities import LocalProtocolError
 
 from backend.models.drone import Drone
 from backend.registry import get_registry
@@ -14,10 +16,8 @@ HEARTBEAT_TIMEOUT_SECONDS: Final = 0.2
 async def send_message_to_socket(socket: WebSocket, drone: Drone) -> None:
     try:
         await socket.send_json(drone.dict())
-        if bool(CRAZYFLIE_ENABLE_HEARTBEAT):
-            await asyncio.wait_for(socket.receive(), timeout=HEARTBEAT_TIMEOUT_SECONDS)
-    except (asyncio.TimeoutError, WebSocketDisconnect):
-        await get_registry().unregister_socket(socket)
+    except (LocalProtocolError, RuntimeError) as e:
+        logging.error(e)
 
 
 async def process_outbound_drone_pulses() -> None:
