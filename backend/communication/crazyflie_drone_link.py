@@ -48,7 +48,7 @@ class CrazyflieDroneLink(DroneLink):
         self.crazyflie.disconnected.add_callback(partial(self._on_disconnected, loop=loop))
         self.crazyflie.connection_failed.add_callback(partial(self._on_connection_failed, loop=loop))
         self.crazyflie.connection_lost.add_callback(partial(self._on_connection_lost, loop=loop))
-        self.crazyflie.console.receivedChar.add_callback(self._on_receivedChar)
+        self.crazyflie.console.receivedChar.add_callback(self._on_received_char)
         for log_config in self.log_configs:
             log_config.data_received_cb.add_callback(partial(self._on_incoming_log_message, loop=loop))
         await asyncio.to_thread(self.crazyflie.open_link, self.uri)
@@ -72,7 +72,7 @@ class CrazyflieDroneLink(DroneLink):
         logger.error(f"Crazyflie {link_uri} is connected")
         loop.call_soon_threadsafe(self.connection_established.set)
 
-    def _on_receivedChar(self, text: str) -> None:
+    def _on_received_char(self, text: str) -> None:
         print(text)
 
     # TODO: handle disconnections and connection error
