@@ -34,7 +34,7 @@ class RegisteredDrone:
 
     @update_from_log_message.register
     def _update_battery_and_position(self, log_message: BatteryAndPositionLogMessage) -> None:
-        self.battery = DroneBattery(charge_percentage=log_message.pm_battery_level, voltage=log_message.pm_vbat)
+        self.battery = DroneBattery(charge_percentage=log_message.drone_battery_level, voltage=log_message.pm_vbat)
         self.position = DroneVec3(
             x=log_message.kalman_state_x, y=log_message.kalman_state_y, z=log_message.kalman_state_z
         )
