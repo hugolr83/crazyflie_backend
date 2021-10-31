@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.0 (2021-10-31)
+### Feature
+* Get battery level from custom logging group ([`5b209b4`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/5b209b4fa1795e8421b7c40365e25cfc08b919ad))
+
 ## v1.3.0 (2021-10-12)
 ### Feature
 * Handle gracefully disconnection and task termination on shutdown ([`fb6010b`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/fb6010bee316202cf9d6a32ecd853f18a8e171f9))
