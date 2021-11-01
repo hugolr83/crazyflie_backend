@@ -1,11 +1,11 @@
 import asyncio
 import json
 from asyncio import Queue
-from typing import Any, cast
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from cflib.crazyflie.log import LogConfig, LogTocElement, LogVariable
+from cflib.crazyflie.log import LogTocElement, LogVariable
 
 from backend.communication.log_message import (
     BatteryAndPositionLogMessage,
