@@ -52,5 +52,5 @@ async def shutdown_event() -> None:
         await terminate_tasks()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover since this entrypoint is only used for debugging
     uvicorn.run("backend.app:app", host="127.0.0.1", port=8000, log_level="debug", reload=True, workers=1)

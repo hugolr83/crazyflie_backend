@@ -73,7 +73,7 @@ class CrazyflieDroneLink(DroneLink):
         loop.call_soon_threadsafe(self.connection_established.set)
 
     def _on_received_char(self, text: str) -> None:
-        print(text)
+        logger.warning(f"Log from Crazyflie {self.uri}: {text}")
 
     # TODO: handle disconnections and connection error
     def _on_connection_failed(self, link_uri: str, msg: Any, loop: AbstractEventLoop) -> None:

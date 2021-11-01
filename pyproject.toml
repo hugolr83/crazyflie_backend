@@ -74,10 +74,11 @@ mypy = "0.910"  # Mypy is pinned so that it doesn't randomly break our main bran
 flake8 = "^3.9.2"
 black = "^21.8b0"
 pytest = "^6.2.5"
-pytest_async = "^0.1.1"
+pytest-asyncio = "^0.16.0"
 pytest-cov = "^2.12.1"
 python-semantic-release = "^7.19.2"
 requests = "^2.26.0"
+asynctest = "^0.13.0"
 
 [tool.semantic_release]
 version_variable = ["backend/__init__.py:__version__", "pyproject.toml:version"]

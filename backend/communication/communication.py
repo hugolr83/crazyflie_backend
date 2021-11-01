@@ -44,8 +44,9 @@ async def initiate_argos_drone_link(drone_port: int) -> None:
 
 
 async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
-    scanned_uris: list[str]
-    if not (scanned_uris := list(filter(None, itertools.chain(*crtp.scan_interfaces(crazyflie_address))))):
+    # scan_interfaces returns a list of lists (ಠ_ಠ) so this flatten the result
+    scanned_uris: list[str] = list(filter(None, itertools.chain(*crtp.scan_interfaces(crazyflie_address))))
+    if not scanned_uris:
         raise CrazyflieCommunicationException(hex(crazyflie_address))
 
     drone_uri: str = next(iter(scanned_uris))
