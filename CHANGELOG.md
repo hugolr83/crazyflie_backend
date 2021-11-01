@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.1 (2021-11-01)
+### Fix
+* Use new version of the OpenAPI Generator ([`9130a3f`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/9130a3f97214480fd52ba55db65722760a2ab525))
+
 ## v1.4.0 (2021-10-31)
 ### Feature
 * Get battery level from custom logging group ([`5b209b4`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/5b209b4fa1795e8421b7c40365e25cfc08b919ad))
