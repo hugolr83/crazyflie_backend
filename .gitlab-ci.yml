@@ -121,7 +121,7 @@ build_and_push_backend_image:
 
 generate_api_client:
   stage: generate_api_client
-  image: $CI_REGISTRY_IMAGE/openapi-generator-cli:0.0.2
+  image: $CI_REGISTRY_IMAGE/openapi-generator-cli:0.0.3
   variables:
     NPM_REPO_URL: $CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/npm/
   script:
