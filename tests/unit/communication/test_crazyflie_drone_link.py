@@ -1,7 +1,7 @@
 import asyncio
 from asyncio import AbstractEventLoop, Event
-from typing import Final, Generator
-from unittest.mock import ANY, MagicMock, PropertyMock, patch
+from typing import AsyncGenerator, Final, Generator
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from cflib.crazyflie import Console, Crazyflie, Log
@@ -53,7 +53,7 @@ def crazyflie_mock() -> Generator[MagicMock, None, None]:
 @pytest.fixture()
 async def crazyflie_link_mock(
     crazyflie_mock: MagicMock, wait_mock: MagicMock, log_config_mock: MagicMock
-) -> Generator[MagicMock, None, None]:
+) -> AsyncGenerator[CrazyflieDroneLink, None]:
     yield await CrazyflieDroneLink.create(CRAZYFLIE_URI, MagicMock(spec=InboundLogMessageCallable))
 
 
