@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.2 (2021-11-01)
+### Fix
+* Try to fix CI part 2 ([`6b7ef40`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/6b7ef40cd70008a79f888d0f4398ba3794b43632))
+
 ## v1.4.1 (2021-11-01)
 ### Fix
 * Use new version of the OpenAPI Generator ([`9130a3f`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/9130a3f97214480fd52ba55db65722760a2ab525))
