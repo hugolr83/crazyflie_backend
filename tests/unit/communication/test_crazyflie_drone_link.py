@@ -1,13 +1,15 @@
 import asyncio
+import struct
 from asyncio import AbstractEventLoop, Event
 from typing import AsyncGenerator, Final, Generator
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
 
 import pytest
-from cflib.crazyflie import Console, Crazyflie, Log
+from cflib.crazyflie import Appchannel, Console, Crazyflie, Log
 from cflib.crazyflie.log import LogConfig
 from cflib.utils.callbacks import Caller
 
+from backend.communication.command import Command
 from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
 from backend.communication.drone_link import InboundLogMessageCallable
 from backend.exceptions.communication import CrazyflieCommunicationException
@@ -39,12 +41,13 @@ def crazyflie_mock() -> Generator[MagicMock, None, None]:
     with patch("backend.communication.crazyflie_drone_link.Crazyflie", autospec=Crazyflie) as mocked_crazyflie:
         # Annoying and ugly way to set properties, but Python mocking is what it is
         # See: https://docs.python.org/3/library/unittest.mock.html#autospeccing
+        mocked_crazyflie().appchannel = MagicMock(spec=Appchannel)
         mocked_crazyflie().connected = MagicMock(spec=Caller)
-        mocked_crazyflie().disconnected = MagicMock(spec=Caller)
         mocked_crazyflie().connection_failed = MagicMock(spec=Caller)
         mocked_crazyflie().connection_lost = MagicMock(spec=Caller)
         mocked_crazyflie().console = MagicMock(spec=Console)
         mocked_crazyflie().console.receivedChar = MagicMock(spec=Caller)
+        mocked_crazyflie().disconnected = MagicMock(spec=Caller)
         mocked_crazyflie().log = MagicMock(spec=Log)
         mocked_crazyflie.reset_mock()
         yield mocked_crazyflie
@@ -110,7 +113,7 @@ async def test_log_on_received_char(logger_mock: MagicMock, crazyflie_link_mock:
     logger_mock.assert_called()
 
 
-async def test_clear_connection_when_connection_failed(crazyflie_link_mock: MagicMock) -> None:
+async def test_clear_connection_when_connection_failed(crazyflie_link_mock: CrazyflieDroneLink) -> None:
     connection_established_event = Event()
     crazyflie_link_mock.connection_established = connection_established_event
     loop_mock = MagicMock(spec=AbstractEventLoop)
@@ -120,7 +123,7 @@ async def test_clear_connection_when_connection_failed(crazyflie_link_mock: Magi
     loop_mock.call_soon_threadsafe.assert_called_with(connection_established_event.clear)
 
 
-async def test_clear_connection_when_connection_is_lost(crazyflie_link_mock: MagicMock) -> None:
+async def test_clear_connection_when_connection_is_lost(crazyflie_link_mock: CrazyflieDroneLink) -> None:
     connection_established_event = Event()
     crazyflie_link_mock.connection_established = connection_established_event
     loop_mock = MagicMock(spec=AbstractEventLoop)
@@ -130,7 +133,7 @@ async def test_clear_connection_when_connection_is_lost(crazyflie_link_mock: Mag
     loop_mock.call_soon_threadsafe.assert_called_with(connection_established_event.clear)
 
 
-async def test_clear_connection_on_disconnect(crazyflie_link_mock: MagicMock) -> None:
+async def test_clear_connection_on_disconnect(crazyflie_link_mock: CrazyflieDroneLink) -> None:
     connection_established_event = Event()
     crazyflie_link_mock.connection_established = connection_established_event
     loop_mock = MagicMock(spec=AbstractEventLoop)
@@ -138,3 +141,27 @@ async def test_clear_connection_on_disconnect(crazyflie_link_mock: MagicMock) ->
     crazyflie_link_mock._on_disconnected(CRAZYFLIE_URI, loop_mock)
 
     loop_mock.call_soon_threadsafe.assert_called_with(connection_established_event.clear)
+
+
+async def test_incoming_message_callable_is_called_on_message(
+    crazyflie_mock: MagicMock, crazyflie_link_mock: CrazyflieDroneLink, log_config_mock: MagicMock
+) -> None:
+    timestamp = 123
+    data = {"mayday": "the_drone_is_one_fire"}
+    crazyflie_link_mock.on_inbound_log_message = AsyncMock()
+
+    crazyflie_link_mock._on_incoming_log_message(timestamp, data, log_config_mock, asyncio.get_running_loop())
+
+    await asyncio.sleep(0.1)
+    crazyflie_link_mock.on_inbound_log_message.assert_awaited()
+
+
+@pytest.mark.parametrize("command", [command for command in Command])
+async def test_send_command(command: Command, crazyflie_link_mock: CrazyflieDroneLink) -> None:
+    event = Event()
+    event.set()
+    crazyflie_link_mock.connection_established = event
+
+    await crazyflie_link_mock.send_command(command)
+
+    crazyflie_link_mock.crazyflie.appchannel.send_packet.assert_called_with(data=struct.pack("I", command.value))
