@@ -1,4 +1,5 @@
 import struct
+import warnings
 from asyncio import CancelledError, StreamReader, StreamWriter, Task
 from typing import Final, Generator
 from unittest.mock import AsyncMock, MagicMock, patch

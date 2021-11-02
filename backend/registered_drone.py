@@ -27,7 +27,7 @@ class RegisteredDrone:
 
     @singledispatchmethod
     def update_from_log_message(self, log_message: LogMessage) -> None:
-        raise NotImplementedError("log_message must be an instance of a child class of LogMessage")  # pragma: cover
+        raise NotImplementedError("log_message must be an instance of a child class of LogMessage")  # pragma: no cover
 
     @update_from_log_message.register
     def _update_battery_and_position(self, log_message: BatteryAndPositionLogMessage) -> None:

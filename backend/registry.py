@@ -15,7 +15,6 @@ from backend.tasks.backend_task import BackendTask
 class Registry:
     drones: dict[str, RegisteredDrone] = field(default_factory=dict)
     backend_tasks: list[BackendTask] = field(default_factory=list)
-    pulse_sockets: list[WebSocket] = field(default_factory=list)
     _inbound_log_message_queue: Optional[Queue[LogMessage]] = None
 
     def get_drone(self, drone_uuid: str) -> Optional[RegisteredDrone]:
@@ -38,11 +37,9 @@ class Registry:
     def register_drone(self, drone: RegisteredDrone) -> None:
         self.drones[drone.uuid] = drone
 
-    def register_socket(self, socket: WebSocket) -> None:
-        self.pulse_sockets.append(socket)
-
-    def unregister_socket(self, socket: WebSocket) -> None:
-        self.pulse_sockets.remove(socket)
+    def unregister_drone(self, drone: RegisteredDrone) -> None:
+        if self.drones.get(drone.uuid):
+            del self.drones[drone.uuid]
 
     def register_task(self, task: BackendTask) -> None:
         self.backend_tasks.append(task)
