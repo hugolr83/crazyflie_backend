@@ -49,8 +49,6 @@ def assert_drone_is_registered(mocked_drone_link: MagicMock, registry_mock: Magi
     assert isinstance(registry_mock.register_drone.call_args.args[0], RegisteredDrone)
     assert UUID(registry_mock.register_drone.call_args.args[0].uuid)
     assert registry_mock.register_drone.call_args.args[0].link == mocked_drone_link
-    assert isinstance(registry_mock.register_drone.call_args.args[0].battery_and_position_updated, Event)
-    assert isinstance(registry_mock.register_drone.call_args.args[0].range_updated, Event)
 
 
 @patch.object(ArgosDroneLink, "create")

@@ -40,7 +40,7 @@ async def initiate_argos_drone_link(drone_port: int) -> None:
         drone_port,
         partial(on_incoming_argos_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue),
     )
-    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link, Event(), Event()))
+    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link))
 
 
 async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
@@ -57,7 +57,7 @@ async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
             on_incoming_crazyflie_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue
         ),
     )
-    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link, Event(), Event()))
+    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link))
 
 
 async def initiate_links() -> None:

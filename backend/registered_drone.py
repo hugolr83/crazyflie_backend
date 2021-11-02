@@ -1,4 +1,3 @@
-from asyncio import Event
 from dataclasses import dataclass
 from functools import singledispatchmethod
 
@@ -17,8 +16,6 @@ from backend.models.drone import Drone, DroneBattery, DroneRange, DroneState, Dr
 class RegisteredDrone:
     uuid: str
     link: DroneLink
-    battery_and_position_updated: Event
-    range_updated: Event
     state: DroneState = DroneState.WAITING
     battery: DroneBattery = DroneBattery(charge_percentage=0, voltage=0.0)
     position: DroneVec3 = DroneVec3(x=0.0, y=0.0, z=0.0)
@@ -30,7 +27,7 @@ class RegisteredDrone:
 
     @singledispatchmethod
     def update_from_log_message(self, log_message: LogMessage) -> None:
-        raise NotImplementedError("log_message must be an instance of a child class of LogMessage")
+        raise NotImplementedError("log_message must be an instance of a child class of LogMessage")  # pragma: cover
 
     @update_from_log_message.register
     def _update_battery_and_position(self, log_message: BatteryAndPositionLogMessage) -> None:
@@ -38,7 +35,6 @@ class RegisteredDrone:
         self.position = DroneVec3(
             x=log_message.kalman_state_x, y=log_message.kalman_state_y, z=log_message.kalman_state_z
         )
-        self.battery_and_position_updated.set()
 
     @update_from_log_message.register
     def _update_range(self, log_message: RangeLogMessage) -> None:
@@ -50,20 +46,11 @@ class RegisteredDrone:
             right=log_message.range_right,
             bottom=log_message.range_zrange,
         )
-        self.range_updated.set()
 
     @update_from_log_message.register
     def _update_all_field(self, log_message: FullLogMessage) -> None:
         self._update_battery_and_position(log_message)
         self._update_range(log_message)
-
-    def should_process_updated_telemetry(self) -> bool:
-        """Only communicate updated telemetry data once every fields are updated"""
-        if self.battery_and_position_updated.is_set() and self.range_updated.is_set():
-            self.battery_and_position_updated.clear()
-            self.range_updated.clear()
-            return True
-        return False
 
     def to_model(self) -> Drone:
         return Drone(
