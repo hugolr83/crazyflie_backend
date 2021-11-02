@@ -5,7 +5,6 @@ from coveo_settings.mock import mock_config_value
 
 from backend.app import ONLY_SERVE_OPENAPI_SCHEMA, shutdown_event, startup_event
 
-
 # All test coroutines will be treated as marked
 pytestmark = pytest.mark.asyncio
 

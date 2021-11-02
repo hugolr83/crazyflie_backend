@@ -1,4 +1,3 @@
-from asyncio import Event
 from itertools import count, islice
 from logging import Logger
 from typing import Final, Generator

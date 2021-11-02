@@ -6,7 +6,7 @@ from typing import Generator, Optional
 from starlette.websockets import WebSocket
 
 from backend.communication.log_message import LogMessage
-from backend.models.drone import Drone, DroneType
+from backend.models.drone import DroneType
 from backend.registered_drone import RegisteredDrone
 from backend.tasks.backend_task import BackendTask
 

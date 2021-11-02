@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter
 
 from backend.communication.command import Command
 from backend.communication.communication import send_command_to_all_drones

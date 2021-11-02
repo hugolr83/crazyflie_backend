@@ -1,4 +1,3 @@
-from asyncio import Event
 from typing import Final, Generator
 from unittest.mock import MagicMock
 

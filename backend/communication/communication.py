@@ -1,7 +1,6 @@
 import asyncio
 import itertools
 import uuid
-from asyncio import Event
 from functools import partial
 from itertools import count, islice
 from typing import Final
