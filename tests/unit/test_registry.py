@@ -6,10 +6,9 @@ import pytest
 from backend.communication.drone_link import DroneLink
 from backend.registered_drone import RegisteredDrone
 from backend.registry import get_registry
-
-# All test coroutines will be treated as marked
 from backend.tasks.backend_task import BackendTask
 
+# All test coroutines will be treated as marked
 pytestmark = pytest.mark.asyncio
 
 
