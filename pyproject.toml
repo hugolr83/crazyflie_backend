@@ -78,6 +78,10 @@ pytest-cov = "^2.12.1"
 python-semantic-release = "^7.19.2"
 requests = "^2.26.0"
 
+[tool.pytest.ini_options]
+# ignore the RuntimeWarning that coroutine are not awaited during unit tests since that's expected
+filterwarnings = ["ignore::RuntimeWarning"]
+
 [tool.semantic_release]
 version_variable = ["backend/__init__.py:__version__", "pyproject.toml:version"]
 branch = "main"
