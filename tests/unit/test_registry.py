@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import MagicMock
 
 import pytest
@@ -6,7 +7,6 @@ from backend.communication.drone_link import DroneLink
 from backend.registered_drone import RegisteredDrone
 from backend.registry import get_registry
 
-
 # All test coroutines will be treated as marked
 from backend.tasks.backend_task import BackendTask
 
@@ -14,7 +14,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture(autouse=True)
-def clear_registry_cache() -> None:
+def clear_registry_cache() -> Generator[None, None, None]:
     get_registry.cache_clear()
     yield
 

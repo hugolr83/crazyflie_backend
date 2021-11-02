@@ -3,8 +3,6 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Generator, Optional
 
-from starlette.websockets import WebSocket
-
 from backend.communication.log_message import LogMessage
 from backend.models.drone import DroneType
 from backend.registered_drone import RegisteredDrone
