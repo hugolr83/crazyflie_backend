@@ -52,5 +52,4 @@ class ArgosDroneLink(DroneLink):
 
     async def send_command(self, command: Command) -> None:
         self.writer.write(struct.pack("Ic", command.value, b"\n"))
-        drain_awaitable = self.writer.drain()
-        await drain_awaitable
+        await self.writer.drain()
