@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend import __version__
 from backend.communication.communication import initiate_links, terminate_links
+from backend.database.database import setup_tables
 from backend.routers.argos import router as argos_router
 from backend.routers.common import router as common_router
 from backend.routers.crazyflie import router as crazyflie_router
@@ -43,13 +44,14 @@ async def startup_event() -> None:
     if not bool(ONLY_SERVE_OPENAPI_SCHEMA):
         await initiate_links()
         await initiate_tasks()
+        await setup_tables()
 
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
     if not bool(ONLY_SERVE_OPENAPI_SCHEMA):
-        await terminate_links()
         await terminate_tasks()
+        await terminate_links()
 
 
 if __name__ == "__main__":  # pragma: no cover since this entrypoint is only used for debugging

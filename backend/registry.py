@@ -1,19 +1,22 @@
 from asyncio import Queue
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Generator, Optional
+from typing import Generator, Optional, TYPE_CHECKING
 
-from backend.communication.log_message import LogMessage
+from backend.database.models import SavedLog
 from backend.models.drone import DroneType
 from backend.registered_drone import RegisteredDrone
 from backend.tasks.backend_task import BackendTask
+from backend.communication.log_message import CrazyflieDebugMessage, LogMessage
 
 
 @dataclass
 class Registry:
     drones: dict[str, RegisteredDrone] = field(default_factory=dict)
     backend_tasks: list[BackendTask] = field(default_factory=list)
+    _crazyflie_debug_queue: Optional[Queue[CrazyflieDebugMessage]] = None
     _inbound_log_message_queue: Optional[Queue[LogMessage]] = None
+    _logging_queue: Optional[Queue[SavedLog]] = None
 
     def get_drone(self, drone_uuid: str) -> Optional[RegisteredDrone]:
         return self.drones.get(drone_uuid)
@@ -25,12 +28,23 @@ class Registry:
             yield from self.drones.values()
 
     @property
+    def crazyflie_debug_queue(self) -> Queue[CrazyflieDebugMessage]:
+        assert self._crazyflie_debug_queue
+        return self._crazyflie_debug_queue
+
+    @property
     def inbound_log_queue(self) -> Queue[LogMessage]:
         assert self._inbound_log_message_queue
         return self._inbound_log_message_queue
 
+    @property
+    def logging_queue(self) -> Queue[SavedLog]:
+        assert self._logging_queue
+        return self._logging_queue
+
     async def initialize_queues(self) -> None:
         self._inbound_log_message_queue = Queue()
+        self._logging_queue = Queue()
 
     def register_drone(self, drone: RegisteredDrone) -> None:
         self.drones[drone.uuid] = drone
