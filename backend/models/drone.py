@@ -1,14 +1,17 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 from pydantic import BaseModel
 
 
-class DroneState(str, Enum):
-    WAITING = "WAITING"
-    STARTING = "STARTING"
-    NAVIGATING = "NAVIGATING"
-    CRASHED = "CRASHED"
-    LANDING = "LANDING"
+class DroneState(IntEnum):
+    NOT_READY = 0,
+    READY = 1,
+    TAKING_OFF = 2,
+    LANDING = 3
+    HOVERING = 4
+    EXPLORING = 5
+    RETURNING_BASE = 6
+    CRASHED = 7
 
 
 class DroneType(str, Enum):
@@ -18,7 +21,6 @@ class DroneType(str, Enum):
 
 class DroneBattery(BaseModel):
     charge_percentage: int
-    voltage: float
 
 
 class DroneVec3(BaseModel):
@@ -38,7 +40,7 @@ class DroneRange(BaseModel):
 
 class Drone(BaseModel):
     uuid: str
-    state: DroneState
+    state: str
     type: DroneType
     battery: DroneBattery
     position: DroneVec3

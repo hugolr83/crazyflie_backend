@@ -22,7 +22,7 @@ class BatteryAndPositionLogMessage(LogMessage):
     kalman_state_x: float
     kalman_state_y: float
     kalman_state_z: float
-    pm_vbat: float
+    drone_state: int
     drone_battery_level: int
 
 
@@ -62,7 +62,7 @@ CRAZYFLIE_LOG_CONFIGS: Final = [
         "battery_and_position",
         CRAZYFLIE_LOG_CONFIG_PERIOD_MS,
         [
-            LogConfigVariable("pm.vbat", "float"),
+            LogConfigVariable("drone.state", "uint8_t"),
             LogConfigVariable("drone.batteryLevel", "uint8_t"),
             LogConfigVariable("kalman.stateX", "float"),
             LogConfigVariable("kalman.stateY", "float"),
