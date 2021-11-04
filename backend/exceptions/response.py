@@ -8,11 +8,11 @@ from backend.models.drone import DroneType
 class ResponseException(HTTPException):
     @classmethod
     def http_status_code(cls) -> int:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @classmethod
     def description(cls) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class DroneNotFoundException(ResponseException):

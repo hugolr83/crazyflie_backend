@@ -1,4 +1,3 @@
-from asyncio import Event
 from typing import Final, Generator
 from unittest.mock import MagicMock
 
@@ -36,8 +35,6 @@ def registry_mock(mocked_argos_link: MagicMock, mocked_crazyflie_link: MagicMock
     argos_drone = RegisteredDrone(
         ARGOS_UUID,
         mocked_argos_link,
-        MagicMock(spec=Event),
-        MagicMock(spec=Event),
         DroneState.WAITING,
         DroneBattery(charge_percentage=2, voltage=3.4),
         DroneVec3(x=1.2, y=3.6, z=2.53),
@@ -46,8 +43,6 @@ def registry_mock(mocked_argos_link: MagicMock, mocked_crazyflie_link: MagicMock
     crazyflie_drone = RegisteredDrone(
         CRAZYFLIE_UUID,
         mocked_crazyflie_link,
-        MagicMock(spec=Event),
-        MagicMock(spec=Event),
         DroneState.CRASHED,
         DroneBattery(charge_percentage=90, voltage=4.1),
         DroneVec3(x=99.1, y=1919.2, z=3.2),

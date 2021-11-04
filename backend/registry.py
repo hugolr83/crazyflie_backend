@@ -3,10 +3,8 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Generator, Optional
 
-from starlette.websockets import WebSocket
-
 from backend.communication.log_message import LogMessage
-from backend.models.drone import Drone, DroneType
+from backend.models.drone import DroneType
 from backend.registered_drone import RegisteredDrone
 from backend.tasks.backend_task import BackendTask
 
@@ -15,9 +13,7 @@ from backend.tasks.backend_task import BackendTask
 class Registry:
     drones: dict[str, RegisteredDrone] = field(default_factory=dict)
     backend_tasks: list[BackendTask] = field(default_factory=list)
-    pulse_sockets: list[WebSocket] = field(default_factory=list)
     _inbound_log_message_queue: Optional[Queue[LogMessage]] = None
-    _output_pulse_queue: Optional[Queue[Drone]] = None
 
     def get_drone(self, drone_uuid: str) -> Optional[RegisteredDrone]:
         return self.drones.get(drone_uuid)
@@ -33,23 +29,15 @@ class Registry:
         assert self._inbound_log_message_queue
         return self._inbound_log_message_queue
 
-    @property
-    def outbound_pulse_queue(self) -> Queue[Drone]:
-        assert self._output_pulse_queue
-        return self._output_pulse_queue
-
     async def initialize_queues(self) -> None:
         self._inbound_log_message_queue = Queue()
-        self._output_pulse_queue = Queue()
 
     def register_drone(self, drone: RegisteredDrone) -> None:
         self.drones[drone.uuid] = drone
 
-    def register_socket(self, socket: WebSocket) -> None:
-        self.pulse_sockets.append(socket)
-
-    def unregister_socket(self, socket: WebSocket) -> None:
-        self.pulse_sockets.remove(socket)
+    def unregister_drone(self, drone: RegisteredDrone) -> None:
+        if self.drones.get(drone.uuid):
+            del self.drones[drone.uuid]
 
     def register_task(self, task: BackendTask) -> None:
         self.backend_tasks.append(task)

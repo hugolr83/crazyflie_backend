@@ -14,25 +14,14 @@ from backend.tasks.tasks import initiate_tasks, terminate_tasks
 
 ONLY_SERVE_OPENAPI_SCHEMA: Final = BoolSetting("only_serve_openapi_schema", fallback=False)
 
-TAGS_METADATA: Final = [
-    {
-        "name": "argos",
-        "description": "Endpoints that target only the Argos (simulated) drones",
-    },
-    {
-        "name": "common",
-        "description": "Endpoints that target all the drones",
-    },
-    {
-        "name": "crazyflie",
-        "description": "Endpoints that target only the Crazyflie drones",
-    },
-]
-
 app = FastAPI(
     title="Backend",
     description="Serving request from the WebUI to the Crazyflie and Argos drones 🚀",
-    openapi_tags=TAGS_METADATA,
+    openapi_tags=[
+        {"name": "argos", "description": "Endpoints that target only the Argos (simulated) drones"},
+        {"name": "common", "description": "Endpoints that target all the drones"},
+        {"name": "crazyflie", "description": "Endpoints that target only the Crazyflie drones"},
+    ],
     servers=[
         {"url": "http://localhost:8080/api", "description": "Release endpoint"},
         {"url": "http://localhost:8000", "description": "Development endpoint"},
@@ -63,5 +52,5 @@ async def shutdown_event() -> None:
         await terminate_tasks()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover since this entrypoint is only used for debugging
     uvicorn.run("backend.app:app", host="127.0.0.1", port=8000, log_level="debug", reload=True, workers=1)

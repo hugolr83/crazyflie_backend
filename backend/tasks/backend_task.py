@@ -13,8 +13,9 @@ class BackendTask(ABC):
 
     @abstractmethod
     async def run(self) -> None:
-        ...
+        ...  # pragma: no cover
 
     async def terminate(self) -> None:
         if self.task:
             self.task.cancel()
+            self.task = None

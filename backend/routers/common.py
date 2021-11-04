@@ -1,12 +1,11 @@
 from typing import Optional
 
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter
 
 from backend.communication.command import Command
 from backend.communication.communication import send_command_to_all_drones
 from backend.models.drone import Drone, DroneType
 from backend.registry import get_registry
-from backend.tasks.inbound_websocket_heartbeat_task import InboundWebsocketHeartbeatTask
 
 router = APIRouter(tags=["common"])
 
@@ -35,15 +34,3 @@ async def end_mission(drone_type: DroneType) -> list[Drone]:
 async def return_to_base(drone_type: DroneType) -> list[Drone]:
     """Return to base for a specific drone type. Will communicate with all registered drones of that type."""
     return await send_command_to_all_drones(Command.RETURN_TO_BASE, list(get_registry().get_drones(drone_type)))
-
-
-@router.websocket("/drone_pulses")
-async def drone_pulses(socket: WebSocket) -> None:
-    """Start a WebSocket that subscribe to all the pulses from the drones."""
-    await socket.accept()
-    heartbeat_task = InboundWebsocketHeartbeatTask(socket)
-    await heartbeat_task.initiate()
-
-    registry = get_registry()
-    registry.register_socket(socket)
-    registry.register_task(heartbeat_task)

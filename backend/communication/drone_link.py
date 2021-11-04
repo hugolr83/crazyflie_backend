@@ -11,12 +11,12 @@ InboundLogMessageCallable = Callable[..., Coroutine[Any, Any, None]]
 class DroneLink(ABC):
     @abstractmethod
     async def initiate(self) -> None:
-        ...
+        ...  # pragma: no cover
 
     @abstractmethod
     async def terminate(self) -> None:
-        ...
+        ...  # pragma: no cover
 
     @abstractmethod
     async def send_command(self, command: Command) -> None:
-        ...
+        ...  # pragma: no cover

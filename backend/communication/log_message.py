@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
-import logging
 from asyncio import Queue
 from dataclasses import dataclass
 from typing import Any, Final, Generator, Type
 
 from cflib.crazyflie.log import LogConfig
 from coveo_functools import flex
+from fastapi.logger import logger
 
 
 @dataclass
@@ -52,7 +52,7 @@ class LogConfigVariable:
 class LogConfigConfiguration:
     name: str
     period_ms: float
-    parameters: list[LogConfigVariable]
+    variables: list[LogConfigVariable]
     dataclass: Type[LogMessage]
 
 
@@ -89,7 +89,7 @@ CRAZYFLIE_LOG_CONFIGS: Final = [
 def generate_log_configs() -> Generator[LogConfig, None, None]:
     for configuration in CRAZYFLIE_LOG_CONFIGS:
         log_config = LogConfig(configuration.name, configuration.period_ms)
-        for variable in configuration.parameters:
+        for variable in configuration.variables:
             log_config.add_variable(variable.name, variable.fetch_as)
         yield log_config
 
@@ -105,7 +105,7 @@ async def on_incoming_crazyflie_log_message(
         incoming_data = data | {"drone_uuid": drone_uuid, "timestamp": timestamp}
         await inbound_queue.put(flex.deserialize(value=incoming_data, hint=log_message_type))
     else:
-        logging.error(f"LogConfig with name {log_config.name} is unknown")
+        logger.error(f"LogConfig with name {log_config.name} is unknown")
 
 
 async def on_incoming_argos_log_message(drone_uuid: str, inbound_queue: Queue[LogMessage], data: bytes) -> None:

@@ -2,9 +2,8 @@ from typing import Final
 
 from backend.registry import get_registry
 from backend.tasks.inbound_log_processing_task import InboundLogProcessingTask
-from backend.tasks.outbound_drone_pulses_task import OutboundDronePulsesTask
 
-TASKS_TO_INITIALIZE: Final = [InboundLogProcessingTask, OutboundDronePulsesTask]
+TASKS_TO_INITIALIZE: Final = [InboundLogProcessingTask]
 
 
 async def initiate_tasks() -> None:

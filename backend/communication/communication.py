@@ -1,7 +1,6 @@
 import asyncio
 import itertools
 import uuid
-from asyncio import Event
 from functools import partial
 from itertools import count, islice
 from typing import Final
@@ -40,12 +39,13 @@ async def initiate_argos_drone_link(drone_port: int) -> None:
         drone_port,
         partial(on_incoming_argos_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue),
     )
-    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link, Event(), Event()))
+    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link))
 
 
 async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
-    scanned_uris: list[str]
-    if not (scanned_uris := list(filter(None, itertools.chain(*crtp.scan_interfaces(crazyflie_address))))):
+    # scan_interfaces returns a list of lists (ಠ_ಠ) so this flatten the result
+    scanned_uris: list[str] = list(filter(None, itertools.chain(*crtp.scan_interfaces(crazyflie_address))))
+    if not scanned_uris:
         raise CrazyflieCommunicationException(hex(crazyflie_address))
 
     drone_uri: str = next(iter(scanned_uris))
@@ -56,7 +56,7 @@ async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
             on_incoming_crazyflie_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue
         ),
     )
-    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link, Event(), Event()))
+    get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link))
 
 
 async def initiate_links() -> None:
