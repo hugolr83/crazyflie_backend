@@ -35,7 +35,7 @@ def registry_mock(mocked_argos_link: MagicMock, mocked_crazyflie_link: MagicMock
     argos_drone = RegisteredDrone(
         ARGOS_UUID,
         mocked_argos_link,
-        DroneState.WAITING,
+        DroneState.NOT_READY,
         DroneBattery(charge_percentage=2, voltage=3.4),
         DroneVec3(x=1.2, y=3.6, z=2.53),
         DroneRange(front=412312, back=1223, up=134, left=2, right=18, bottom=181),
