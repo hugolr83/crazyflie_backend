@@ -46,6 +46,7 @@ async def test_crazyflie_message_are_queued_on_incoming_battery_message() -> Non
         kalman_state_x=1,
         kalman_state_y=2,
         kalman_state_z=3,
+        state_estimate_yaw=40,
         drone_state=0,
         drone_battery_level=10,
     )
@@ -55,6 +56,7 @@ async def test_crazyflie_message_are_queued_on_incoming_battery_message() -> Non
         "kalman.stateX": log_message.kalman_state_x,
         "kalman.stateY": log_message.kalman_state_y,
         "kalman.stateZ": log_message.kalman_state_z,
+        "state_estimate_yaw": log_message.state_estimate_yaw,
     }
     log_config = next(config for config in generate_log_configs() if config.name == "battery_and_position")
 
@@ -114,6 +116,7 @@ async def test_argos_messages_are_queued_on_incoming_message() -> None:
         kalman_state_x=1,
         kalman_state_y=2,
         kalman_state_z=3,
+        state_estimate_yaw=40,
         drone_state=0,
         drone_battery_level=10,
         range_front=10,
@@ -130,6 +133,7 @@ async def test_argos_messages_are_queued_on_incoming_message() -> None:
         "kalman.stateX": log_message.kalman_state_x,
         "kalman.stateY": log_message.kalman_state_y,
         "kalman.stateZ": log_message.kalman_state_z,
+        "state_estimate_yaw": log_message.state_estimate_yaw,
         "range.front": log_message.range_front,
         "range.back": log_message.range_back,
         "range.up": log_message.range_up,
