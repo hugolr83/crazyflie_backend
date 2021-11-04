@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.5.1 (2021-11-04)
+### Fix
+* Initiate links with crazyflie sequentially ([`b14be21`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/b14be215d598b9546029b81688198d83d7f4605d))
+
 ## v1.5.0 (2021-11-04)
 ### Feature
 * Added the last tests ([`ebf0d85`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/ebf0d8576e82e0445173cc34a71cd91d46ad0920))
