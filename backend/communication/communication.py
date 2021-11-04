@@ -62,16 +62,20 @@ async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
 async def initiate_links() -> None:
     await get_registry().initialize_queues()
 
+    crtp.init_drivers()
+    for address in CRAZYFLIE_ADDRESSES:
+        try:
+            await initiate_crazyflie_drone_link(address)
+        except CrazyflieCommunicationException as e:
+            logger.error(e)
+
     argos_drones_initiation = (
         initiate_argos_drone_link(drone_port)
         for drone_port in islice(count(int(ARGOS_DRONES_STARTING_PORT)), int(ARGOS_NUMBER_OF_DRONES))
     )
 
-    crtp.init_drivers()
-    crazyflie_drones_initiation = (initiate_crazyflie_drone_link(address) for address in CRAZYFLIE_ADDRESSES)
-
-    results = await asyncio.gather(*crazyflie_drones_initiation, *argos_drones_initiation, return_exceptions=True)
-    for exception in (result for result in results if isinstance(result, Exception)):
+    argos_initiation_results = await asyncio.gather(*argos_drones_initiation, return_exceptions=True)
+    for exception in (result for result in argos_initiation_results if isinstance(result, Exception)):
         logger.error(exception)
 
 
