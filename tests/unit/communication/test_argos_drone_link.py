@@ -97,7 +97,7 @@ async def test_incoming_messages_are_processed() -> None:
     )
 
     await drone_link.process_incoming_message()
-    on_incoming_message_callable.assert_awaited_with(expected_message)
+    on_incoming_message_callable.assert_awaited_with(data=expected_message)
 
 
 @pytest.mark.parametrize("command", [command for command in Command])
