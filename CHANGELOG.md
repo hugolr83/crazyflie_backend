@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.6.1 (2021-11-04)
+### Fix
+* Tests ([`c603935`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/c60393539e6577ab1ccc7c2fd3f315bffb62081d))
+
 ## v1.6.0 (2021-11-04)
 ### Feature
 * Add orientation yaw to drone model ([`864cdfe`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/864cdfebce5509e84373d3e0f8a825beefbbb5a1))
