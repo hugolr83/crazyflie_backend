@@ -9,6 +9,8 @@ from cflib.crazyflie.log import LogConfig
 from coveo_functools import flex
 from fastapi.logger import logger
 
+from backend.models.drone import DroneState
+
 
 @dataclass
 class LogMessage:
@@ -22,7 +24,8 @@ class BatteryAndPositionLogMessage(LogMessage):
     kalman_state_x: float
     kalman_state_y: float
     kalman_state_z: float
-    pm_vbat: float
+    state_estimate_yaw: float
+    drone_state: int
     drone_battery_level: int
 
 
@@ -62,11 +65,12 @@ CRAZYFLIE_LOG_CONFIGS: Final = [
         "battery_and_position",
         CRAZYFLIE_LOG_CONFIG_PERIOD_MS,
         [
-            LogConfigVariable("pm.vbat", "float"),
+            LogConfigVariable("drone.state", "uint8_t"),
             LogConfigVariable("drone.batteryLevel", "uint8_t"),
             LogConfigVariable("kalman.stateX", "float"),
             LogConfigVariable("kalman.stateY", "float"),
             LogConfigVariable("kalman.stateZ", "float"),
+            LogConfigVariable("stateEstimate.yaw", "float"),
         ],
         BatteryAndPositionLogMessage,
     ),
@@ -84,6 +88,17 @@ CRAZYFLIE_LOG_CONFIGS: Final = [
         RangeLogMessage,
     ),
 ]
+
+STATES: Final = {
+    0: DroneState.NOT_READY,
+    1: DroneState.READY,
+    2: DroneState.TAKING_OFF,
+    3: DroneState.LANDING,
+    4: DroneState.HOVERING,
+    5: DroneState.EXPLORING,
+    6: DroneState.RETURNING_BASE,
+    7: DroneState.CRASHED,
+}
 
 
 def generate_log_configs() -> Generator[LogConfig, None, None]:
