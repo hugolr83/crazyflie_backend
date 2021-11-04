@@ -9,17 +9,19 @@ from backend.communication.log_message import (
     FullLogMessage,
     LogMessage,
     RangeLogMessage,
+    STATES,
 )
-from backend.models.drone import Drone, DroneBattery, DroneRange, DroneState, DroneType, DroneVec3
+from backend.models.drone import Drone, DroneBattery, DroneRange, DroneState, DroneType, DroneVec3, Orientation
 
 
 @dataclass
 class RegisteredDrone:
     uuid: str
     link: DroneLink
-    state: DroneState = DroneState.WAITING
+    state: DroneState = DroneState.NOT_READY
     battery: DroneBattery = DroneBattery(charge_percentage=0, voltage=0.0)
     position: DroneVec3 = DroneVec3(x=0.0, y=0.0, z=0.0)
+    orientation: Orientation = Orientation(yaw=0.0)
     range: DroneRange = DroneRange(front=0.0, back=0.0, up=0.0, left=0.0, right=0.0, bottom=0.0)
     active_mission_id: Optional[int] = None
 
@@ -37,10 +39,12 @@ class RegisteredDrone:
 
     @update_from_log_message.register
     def _update_battery_and_position(self, log_message: BatteryAndPositionLogMessage) -> None:
-        self.battery = DroneBattery(charge_percentage=log_message.drone_battery_level, voltage=log_message.pm_vbat)
+        self.battery = DroneBattery(charge_percentage=log_message.drone_battery_level)
         self.position = DroneVec3(
             x=log_message.kalman_state_x, y=log_message.kalman_state_y, z=log_message.kalman_state_z
         )
+        self.orientation = Orientation(yaw=log_message.state_estimate_yaw)
+        self.state = STATES[log_message.drone_state]
 
     @update_from_log_message.register
     def _update_range(self, log_message: RangeLogMessage) -> None:
@@ -65,5 +69,6 @@ class RegisteredDrone:
             type=self.drone_type,
             battery=self.battery,
             position=self.position,
+            orientation=self.orientation,
             range=self.range,
         )

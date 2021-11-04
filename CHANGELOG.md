@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v1.6.1 (2021-11-04)
+### Fix
+* Tests ([`c603935`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/c60393539e6577ab1ccc7c2fd3f315bffb62081d))
+
+## v1.6.0 (2021-11-04)
+### Feature
+* Add orientation yaw to drone model ([`864cdfe`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/864cdfebce5509e84373d3e0f8a825beefbbb5a1))
+* Get state from drone ([`aa4bf7a`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/aa4bf7a880318dd0afc5ef07dee5530514e80794))
+
+### Fix
+* Tests ([`9d979f0`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/9d979f02d8d8cf9fbd3726cde3a290730d741a6e))
+* Fix reformatting ([`0f248da`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/0f248daf894e3db68de0ccdfc796d4ac21ae2b57))
+* Tests ([`e61975e`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/e61975ef38fe8fb9dbb722132e79a26d199cc131))
+
+## v1.5.1 (2021-11-04)
+### Fix
+* Initiate links with crazyflie sequentially ([`b14be21`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/b14be215d598b9546029b81688198d83d7f4605d))
+
 ## v1.5.0 (2021-11-04)
 ### Feature
 * Added the last tests ([`ebf0d85`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/ebf0d8576e82e0445173cc34a71cd91d46ad0920))

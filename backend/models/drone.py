@@ -4,11 +4,14 @@ from pydantic import BaseModel
 
 
 class DroneState(str, Enum):
-    WAITING = "WAITING"
-    STARTING = "STARTING"
-    NAVIGATING = "NAVIGATING"
-    CRASHED = "CRASHED"
+    NOT_READY = "NOT READY"
+    READY = "READY"
+    TAKING_OFF = "TAKING OFF"
     LANDING = "LANDING"
+    HOVERING = "HOVERING"
+    EXPLORING = "EXPLORING"
+    RETURNING_BASE = "RETURNING BASE"
+    CRASHED = "CRASHED"
 
 
 class DroneType(str, Enum):
@@ -18,13 +21,16 @@ class DroneType(str, Enum):
 
 class DroneBattery(BaseModel):
     charge_percentage: int
-    voltage: float
 
 
 class DroneVec3(BaseModel):
     x: float
     y: float
     z: float
+
+
+class Orientation(BaseModel):
+    yaw: float
 
 
 class DroneRange(BaseModel):
@@ -42,4 +48,5 @@ class Drone(BaseModel):
     type: DroneType
     battery: DroneBattery
     position: DroneVec3
+    orientation: Orientation
     range: DroneRange

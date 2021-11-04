@@ -14,7 +14,8 @@ def test_update_from_battery_and_position_log_message() -> None:
         kalman_state_x=10,
         kalman_state_y=11,
         kalman_state_z=12,
-        pm_vbat=3.8,
+        state_estimate_yaw=40,
+        drone_state=0,
         drone_battery_level=90,
     )
 
@@ -57,7 +58,8 @@ def test_update_from_full_message() -> None:
         kalman_state_x=10,
         kalman_state_y=11,
         kalman_state_z=12,
-        pm_vbat=3.8,
+        state_estimate_yaw=40,
+        drone_state=0,
         drone_battery_level=90,
         range_front=110,
         range_back=111,

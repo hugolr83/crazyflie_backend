@@ -24,7 +24,7 @@ from backend.models.drone import Drone
 from backend.registered_drone import RegisteredDrone
 from backend.registry import get_registry
 
-ARGOS_ENDPOINT: Final = StringSetting("argos.endpoint", fallback="simulation")
+ARGOS_ENDPOINT: Final = StringSetting("argos.endpoint", fallback="localhost")
 ARGOS_DRONES_STARTING_PORT: Final = IntSetting("argos.starting_port", fallback=3995)
 ARGOS_NUMBER_OF_DRONES: Final = IntSetting("argos.number_of_drones", fallback=2)
 
