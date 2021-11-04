@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v1.5.0 (2021-11-04)
+### Feature
+* Added the last tests ([`ebf0d85`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/ebf0d8576e82e0445173cc34a71cd91d46ad0920))
+* Even even even more tests ([`a9eaeca`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/a9eaeca4cc6a0f10af4c7de89e4682297a989bea))
+* Added even even more missing tests ([`f75515b`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/f75515b06e1ff43bc4e8fdba838944a342675a3d))
+* Added even more missing tests ([`72223b0`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/72223b0ec49027b8771042018ed163db46002226))
+
+### Fix
+* Added more missing tests ([`0a243c0`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/0a243c0d1d8ece25fc750c4982562bbb52e5c834))
+* Added missing tests ([`3228dfb`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/3228dfbc776b415393e5e2f3f0dbca39d9b29a63))
+
 ## v1.4.3 (2021-11-01)
 ### Fix
 * Try to fix CI part 3 ([`77cba03`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/77cba03932c83765399cb9f1a456f3efc500f7c8))
