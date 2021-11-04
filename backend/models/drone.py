@@ -4,9 +4,9 @@ from pydantic import BaseModel
 
 
 class DroneState(IntEnum):
-    NOT_READY = 0,
-    READY = 1,
-    TAKING_OFF = 2,
+    NOT_READY = 0
+    READY = 1
+    TAKING_OFF = 2
     LANDING = 3
     HOVERING = 4
     EXPLORING = 5
