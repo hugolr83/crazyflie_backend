@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v1.7.0 (2021-11-05)
+### Feature
+* Added endpoints to get missions ([`4f6bf66`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/4f6bf667df1b8317f7ceb66f7ff0eac4c67f1d60))
+* Updated backend ([`7d12722`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/7d12722ae7bb574191d5f6c48124efd44fa4bf3f))
+* Working endpoint to get log messages ([`55ed300`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/55ed300aa5e2190d77c2afc765b1321a2d7c6ab7))
+* Add persistant logging ([`4d4be24`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/4d4be2452f5e56d0c307783adbf2bcda380fcfc1))
+
+### Fix
+* Conflicting version ([`78a0522`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/78a0522b8591297b9fad1e6231a1a9516a3c2cef))
+* Don't try to connect to the database ([`21aca9b`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/21aca9b1d11927dcd13748c570d280dab3a2ce02))
+* Tests ([`a432498`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/a4324989adf7dc5e9aa72ab96cef0ec531539272))
+
 ## v1.6.1 (2021-11-04)
 ### Fix
 * Tests ([`c603935`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/c60393539e6577ab1ccc7c2fd3f315bffb62081d))
