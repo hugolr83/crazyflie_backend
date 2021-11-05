@@ -4,7 +4,6 @@ import logging
 from fastapi.logger import logger
 
 from backend.database.models import SavedLog
-from backend.database.statements import insert_log_in_database
 from backend.registry import get_registry
 from backend.tasks.backend_task import BackendTask
 

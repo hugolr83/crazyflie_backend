@@ -25,9 +25,8 @@ class InboundLogProcessingTask(BackendTask):
 
                 if mission_id := drone.active_mission_id:
                     message = "Message received: " + ",".join(
-                        f"'{key}': {value}" for key, value in dataclasses.asdict(log_message).values()
+                        f"'{key}': {value}" for key, value in dataclasses.asdict(log_message).items()
                     )
-                    logger.warning(message)
                     await registry.logging_queue.put(
                         SavedLog(mission_id=mission_id, timestamp=datetime.datetime.now(), message=message)
                     )

@@ -25,4 +25,4 @@ class Log(BaseModel):
     id: int
     mission_id: int
     timestamp: datetime.datetime
-    text: str
+    message: str

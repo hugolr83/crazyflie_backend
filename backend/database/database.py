@@ -13,7 +13,7 @@ DATABASE_URL: Final = (
     f"/{str(DATABASE_NAME)}"
 )
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(DATABASE_URL)
 Base = declarative_base()
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

@@ -19,8 +19,8 @@ async def drones(drone_type: Optional[DroneType] = None) -> list[Drone]:
 
 
 @router.get("/logs", operation_id="get_logs", response_model=list[Log])
-async def get_logs(starting_id: int = 0) -> list[Log]:
-    return await get_log_message(starting_id)
+async def get_logs(mission_id: int, starting_id: int = 0) -> list[Log]:
+    return await get_log_message(mission_id, starting_id)
 
 
 @router.post("/mission", operation_id="create_mission", response_model=Mission)

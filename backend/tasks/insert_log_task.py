@@ -11,7 +11,6 @@ class InsertLogTask(BackendTask):
         try:
             registry = get_registry()
             while log_to_commit := await registry.logging_queue.get():
-                logging.warning(f"received message: {log_to_commit}")
                 await insert_log_in_database(log_to_commit)
         except asyncio.CancelledError:
             pass

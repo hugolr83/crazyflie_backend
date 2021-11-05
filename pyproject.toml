@@ -58,19 +58,18 @@ authors = [
 [tool.poetry.dependencies]
 python = "^3.9"
 autoname = "^2.0.0"
+asyncpg = "^0.24.0"
 colorama = "^0.4.4"
 cflib = "^0.1.16"
 coveo-functools = "^2.0.10"
 coveo-settings = "^2.0.9"
 fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
+psycopg2-binary = "^2.9.1"
 pydantic = "^1.8.2"
 PyYAML = "^5.4.1"
-watchgod = "^0.7"
-
 SQLAlchemy = "^1.4.26"
-asyncpg = "^0.24.0"
-psycopg2 = "^2.9.1"
+watchgod = "^0.7"
 
 [tool.poetry.dev-dependencies]
 black = "^21.8b0"

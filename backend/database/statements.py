@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from fastapi.logger import logger
 from sqlalchemy import select, update
 
 from backend.database.database import async_session
@@ -33,12 +34,15 @@ async def insert_log_in_database(log_message: SavedLog) -> None:
             session.add(log_message)
             await session.commit()
         except Exception as e:
-            print(e)
+            logger.error(e)
 
 
-async def get_log_message(starting_id: int) -> list[Log]:
+async def get_log_message(mission_id: int, starting_id: int) -> list[Log]:
     async with async_session() as session:
-        statement = select(SavedMission).filter(SavedMission.id >= starting_id)
+        statement = select(SavedLog).filter(SavedLog.mission_id == mission_id, SavedLog.id >= starting_id)
         rows = await session.execute(statement)
 
-    return [Log(id=row.id, mission_id=row.mission_id, timestamp=row.timestamp, message=row.text) for row in rows]
+    return [
+        Log(id=row.id, mission_id=row.mission_id, timestamp=row.timestamp, message=row.message)
+        for row in rows.scalars()
+    ]
