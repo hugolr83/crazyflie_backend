@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, Final, Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from starlette.testclient import TestClient

@@ -1,13 +1,13 @@
 from asyncio import Queue
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Generator, Optional, TYPE_CHECKING
+from typing import Generator, Optional
 
+from backend.communication.log_message import CrazyflieDebugMessage, LogMessage
 from backend.database.models import SavedLog
 from backend.models.drone import DroneType
 from backend.registered_drone import RegisteredDrone
 from backend.tasks.backend_task import BackendTask
-from backend.communication.log_message import CrazyflieDebugMessage, LogMessage
 
 
 @dataclass
