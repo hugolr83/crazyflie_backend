@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import singledispatchmethod
+from typing import Optional
 
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.drone_link import DroneLink
@@ -22,6 +23,11 @@ class RegisteredDrone:
     position: DroneVec3 = DroneVec3(x=0.0, y=0.0, z=0.0)
     orientation: Orientation = Orientation(yaw=0.0)
     range: DroneRange = DroneRange(front=0.0, back=0.0, up=0.0, left=0.0, right=0.0, bottom=0.0)
+    active_mission_id: Optional[int] = None
+
+    def get_active_mission_id_or_raise(self) -> int:
+        assert self.active_mission_id
+        return self.active_mission_id
 
     @property
     def drone_type(self) -> DroneType:

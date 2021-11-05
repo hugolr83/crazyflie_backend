@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import json
 from asyncio import Queue
 from dataclasses import dataclass
@@ -10,6 +11,17 @@ from coveo_functools import flex
 from fastapi.logger import logger
 
 from backend.models.drone import DroneState
+
+STATES: Final = {
+    0: DroneState.NOT_READY,
+    1: DroneState.READY,
+    2: DroneState.TAKING_OFF,
+    3: DroneState.LANDING,
+    4: DroneState.HOVERING,
+    5: DroneState.EXPLORING,
+    6: DroneState.RETURNING_BASE,
+    7: DroneState.CRASHED,
+}
 
 
 @dataclass
@@ -43,6 +55,13 @@ class RangeLogMessage(LogMessage):
 @dataclass
 class FullLogMessage(BatteryAndPositionLogMessage, RangeLogMessage):
     pass
+
+
+@dataclass
+class CrazyflieDebugMessage:
+    drone_uuid: str
+    timestamp: datetime.datetime
+    message: str
 
 
 @dataclass
@@ -89,17 +108,6 @@ CRAZYFLIE_LOG_CONFIGS: Final = [
     ),
 ]
 
-STATES: Final = {
-    0: DroneState.NOT_READY,
-    1: DroneState.READY,
-    2: DroneState.TAKING_OFF,
-    3: DroneState.LANDING,
-    4: DroneState.HOVERING,
-    5: DroneState.EXPLORING,
-    6: DroneState.RETURNING_BASE,
-    7: DroneState.CRASHED,
-}
-
 
 def generate_log_configs() -> Generator[LogConfig, None, None]:
     for configuration in CRAZYFLIE_LOG_CONFIGS:
@@ -121,6 +129,14 @@ async def on_incoming_crazyflie_log_message(
         await inbound_queue.put(flex.deserialize(value=incoming_data, hint=log_message_type))
     else:
         logger.error(f"LogConfig with name {log_config.name} is unknown")
+
+
+async def on_incoming_crazyflie_debug_message(
+    message: str, drone_uuid: str, crazyflie_debug_queue: Queue[CrazyflieDebugMessage]
+) -> None:
+    await crazyflie_debug_queue.put(
+        CrazyflieDebugMessage(drone_uuid=drone_uuid, timestamp=datetime.datetime.now(), message=message)
+    )
 
 
 async def on_incoming_argos_log_message(drone_uuid: str, inbound_queue: Queue[LogMessage], data: bytes) -> None:

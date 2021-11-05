@@ -29,13 +29,27 @@ class CrazyflieDroneLink(DroneLink):
     log_configs: list[LogConfig]
     connection_established: Event
     on_inbound_log_message: InboundLogMessageCallable
+    on_debug_log_message: InboundLogMessageCallable
     rw_cache: Path
 
     @classmethod
-    async def create(cls, uri: str, on_inbound_log_message: InboundLogMessageCallable) -> CrazyflieDroneLink:
+    async def create(
+        cls,
+        uri: str,
+        on_inbound_log_message: InboundLogMessageCallable,
+        on_debug_log_message: InboundLogMessageCallable,
+    ) -> CrazyflieDroneLink:
         log_configs = list(generate_log_configs())
         rw_cache = Path(tempfile.mkdtemp())
-        link = cls(Crazyflie(rw_cache=str(rw_cache)), uri, log_configs, Event(), on_inbound_log_message, rw_cache)
+        link = cls(
+            Crazyflie(rw_cache=str(rw_cache)),
+            uri,
+            log_configs,
+            Event(),
+            on_inbound_log_message,
+            on_debug_log_message,
+            rw_cache,
+        )
         await link.initiate()
         return link
 
@@ -48,7 +62,7 @@ class CrazyflieDroneLink(DroneLink):
         self.crazyflie.disconnected.add_callback(partial(self._on_disconnected, loop=loop))
         self.crazyflie.connection_failed.add_callback(partial(self._on_connection_failed, loop=loop))
         self.crazyflie.connection_lost.add_callback(partial(self._on_connection_lost, loop=loop))
-        self.crazyflie.console.receivedChar.add_callback(self._on_received_char)
+        self.crazyflie.console.receivedChar.add_callback(partial(self._on_received_char, loop=loop))
         for log_config in self.log_configs:
             log_config.data_received_cb.add_callback(partial(self._on_incoming_log_message, loop=loop))
         await asyncio.to_thread(self.crazyflie.open_link, self.uri)
@@ -72,8 +86,9 @@ class CrazyflieDroneLink(DroneLink):
         logger.error(f"Crazyflie {link_uri} is connected")
         loop.call_soon_threadsafe(self.connection_established.set)
 
-    def _on_received_char(self, text: str) -> None:
+    def _on_received_char(self, text: str, loop: AbstractEventLoop) -> None:
         logger.warning(f"Log from Crazyflie {self.uri}: {text}")
+        asyncio.run_coroutine_threadsafe(self.on_debug_log_message(message=text), loop)
 
     # TODO: handle disconnections and connection error
     def _on_connection_failed(self, link_uri: str, msg: Any, loop: AbstractEventLoop) -> None:

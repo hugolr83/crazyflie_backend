@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import itertools
 import uuid
 from functools import partial
@@ -12,7 +13,12 @@ from fastapi.logger import logger
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.command import Command
 from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
-from backend.communication.log_message import on_incoming_argos_log_message, on_incoming_crazyflie_log_message
+from backend.communication.log_message import (
+    on_incoming_argos_log_message,
+    on_incoming_crazyflie_debug_message,
+    on_incoming_crazyflie_log_message,
+)
+from backend.database.models import SavedLog
 from backend.exceptions.communication import CrazyflieCommunicationException
 from backend.models.drone import Drone
 from backend.registered_drone import RegisteredDrone
@@ -22,12 +28,22 @@ ARGOS_ENDPOINT: Final = StringSetting("argos.endpoint", fallback="localhost")
 ARGOS_DRONES_STARTING_PORT: Final = IntSetting("argos.starting_port", fallback=3995)
 ARGOS_NUMBER_OF_DRONES: Final = IntSetting("argos.number_of_drones", fallback=2)
 
-CRAZYFLIE_ADDRESSES: Final = [0xE7E7E7E701, 0xE7E7E7E702]
+CRAZYFLIE_ADDRESSES: Final = [0xE7E7E7EE01, 0xE7E7E7EE02]
 
 
-async def send_command_to_all_drones(command: Command, all_drones: list[RegisteredDrone]) -> list[Drone]:
+async def send_command_to_all_drones(
+    command: Command, all_drones: list[RegisteredDrone], mission_id: int
+) -> list[Drone]:
     # TODO: Handle exception
     await asyncio.gather(*(drone.link.send_command(command) for drone in all_drones))
+
+    await get_registry().logging_queue.put(
+        SavedLog(
+            mission_id=mission_id,
+            timestamp=datetime.datetime.now(),
+            message=f"Sending command {command.value} to drones {', '.join(drone.uuid for drone in all_drones)}",
+        )
+    )
 
     return [drone.to_model() for drone in all_drones]
 
@@ -54,6 +70,11 @@ async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
         drone_uri,
         partial(
             on_incoming_crazyflie_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue
+        ),
+        partial(
+            on_incoming_crazyflie_debug_message,
+            drone_uuid=drone_uuid,
+            crazyflie_debug_queue=get_registry().crazyflie_debug_queue,
         ),
     )
     get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link))

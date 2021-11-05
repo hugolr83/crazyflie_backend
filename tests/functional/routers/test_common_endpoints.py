@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, Final, Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from starlette.testclient import TestClient
@@ -63,30 +63,3 @@ def test_get_all_drones(get_registry_mock: Registry, test_case: GetDronesTestCas
 class UpdateDroneTestCase:
     endpoint: str
     command: Command
-
-
-@pytest.mark.parametrize(
-    "test_case",
-    [
-        UpdateDroneTestCase("/start_mission", Command.START_EXPLORATION),
-        UpdateDroneTestCase("/end_mission", Command.LAND),
-        UpdateDroneTestCase("/return_to_base", Command.RETURN_TO_BASE),
-    ],
-)
-@pytest.mark.parametrize("drone_type", ["ARGOS", "CRAZYFLIE"])
-def test_change_drone_state_commands(
-    get_registry_mock: Registry,
-    test_case: UpdateDroneTestCase,
-    drone_type: str,
-    mocked_argos_link: MagicMock,
-    mocked_crazyflie_link: MagicMock,
-    test_client: TestClient,
-) -> None:
-    response = test_client.post(f"{test_case.endpoint}?drone_type={drone_type}")
-    assert response.status_code == HTTPStatus.OK
-    if drone_type == "ARGOS":
-        mocked_argos_link.send_command.assert_called_with(test_case.command)
-        mocked_crazyflie_link.send_command.assert_not_called()
-    else:
-        mocked_argos_link.send_command.assert_not_called()
-        mocked_crazyflie_link.send_command.assert_called_with(test_case.command)
