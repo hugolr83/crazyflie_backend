@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from fastapi.logger import logger
 
@@ -26,3 +27,5 @@ class InboundDebugCrazyflieMessageTask(BackendTask):
                     )
         except asyncio.CancelledError:
             pass
+        except Exception as e:
+            logging.error(e)

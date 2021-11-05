@@ -1,6 +1,7 @@
 import asyncio
 import dataclasses
 import datetime
+import logging
 
 from fastapi.logger import logger
 
@@ -23,14 +24,14 @@ class InboundLogProcessingTask(BackendTask):
                 drone.update_from_log_message(log_message)
 
                 if mission_id := drone.active_mission_id:
-                    logger.warning(f"mission_id: {mission_id}")
+                    message = "Message received: " + ",".join(
+                        f"'{key}': {value}" for key, value in dataclasses.asdict(log_message).values()
+                    )
+                    logger.warning(message)
                     await registry.logging_queue.put(
-                        SavedLog(
-                            mission_id=mission_id,
-                            timestamp=datetime.datetime.now(),
-                            message="Message received: "
-                            + ",".join(f"'{key}': {value}" for key, value in dataclasses.asdict(log_message).values()),
-                        )
+                        SavedLog(mission_id=mission_id, timestamp=datetime.datetime.now(), message=message)
                     )
         except asyncio.CancelledError:
             pass
+        except Exception as e:
+            logging.error(e)

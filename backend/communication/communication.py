@@ -28,7 +28,7 @@ ARGOS_ENDPOINT: Final = StringSetting("argos.endpoint", fallback="localhost")
 ARGOS_DRONES_STARTING_PORT: Final = IntSetting("argos.starting_port", fallback=3995)
 ARGOS_NUMBER_OF_DRONES: Final = IntSetting("argos.number_of_drones", fallback=2)
 
-CRAZYFLIE_ADDRESSES: Final = [0xE7E7E7E701, 0xE7E7E7E702]
+CRAZYFLIE_ADDRESSES: Final = [0xE7E7E7EE01, 0xE7E7E7EE02]
 
 
 async def send_command_to_all_drones(
@@ -72,7 +72,9 @@ async def initiate_crazyflie_drone_link(crazyflie_address: int) -> None:
             on_incoming_crazyflie_log_message, drone_uuid=drone_uuid, inbound_queue=get_registry().inbound_log_queue
         ),
         partial(
-            on_incoming_crazyflie_debug_message, drone_uuid=drone_uuid, log_message_queue=get_registry().logging_queue
+            on_incoming_crazyflie_debug_message,
+            drone_uuid=drone_uuid,
+            crazyflie_debug_queue=get_registry().crazyflie_debug_queue,
         ),
     )
     get_registry().register_drone(RegisteredDrone(drone_uuid, drone_link))

@@ -29,8 +29,11 @@ async def start_existing_mission(mission_id: int) -> None:
 
 async def insert_log_in_database(log_message: SavedLog) -> None:
     async with async_session() as session:
-        session.add(log_message)
-        await session.commit()
+        try:
+            session.add(log_message)
+            await session.commit()
+        except Exception as e:
+            print(e)
 
 
 async def get_log_message(starting_id: int) -> list[Log]:

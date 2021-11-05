@@ -15,3 +15,5 @@ class InsertLogTask(BackendTask):
                 await insert_log_in_database(log_to_commit)
         except asyncio.CancelledError:
             pass
+        except Exception as e:
+            logging.error(e)

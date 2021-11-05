@@ -45,6 +45,7 @@ class Registry:
     async def initialize_queues(self) -> None:
         self._inbound_log_message_queue = Queue()
         self._logging_queue = Queue()
+        self._crazyflie_debug_queue = Queue()
 
     def register_drone(self, drone: RegisteredDrone) -> None:
         self.drones[drone.uuid] = drone
