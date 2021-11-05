@@ -1,7 +1,7 @@
 import asyncio
 import struct
 from asyncio import AbstractEventLoop, Event
-from typing import AsyncGenerator, Final, Generator
+from typing import Any, AsyncGenerator, Final, Generator
 from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
 
 import pytest
@@ -57,13 +57,17 @@ def crazyflie_mock() -> Generator[MagicMock, None, None]:
 async def crazyflie_link_mock(
     crazyflie_mock: MagicMock, wait_mock: MagicMock, log_config_mock: MagicMock
 ) -> AsyncGenerator[CrazyflieDroneLink, None]:
-    yield await CrazyflieDroneLink.create(CRAZYFLIE_URI, MagicMock(spec=InboundLogMessageCallable))
+    yield await CrazyflieDroneLink.create(
+        CRAZYFLIE_URI, MagicMock(spec=InboundLogMessageCallable), MagicMock(spec=InboundLogMessageCallable)
+    )
 
 
 async def test_crazyflie_drone_is_initiated(
-    crazyflie_mock: MagicMock, wait_mock: MagicMock, log_config_mock: MagicMock
+    crazyflie_mock: CrazyflieDroneLink, wait_mock: MagicMock, log_config_mock: MagicMock
 ) -> None:
-    crazyflie_link = await CrazyflieDroneLink.create(CRAZYFLIE_URI, MagicMock(spec=InboundLogMessageCallable))
+    crazyflie_link = await CrazyflieDroneLink.create(
+        CRAZYFLIE_URI, MagicMock(spec=InboundLogMessageCallable), MagicMock(spec=InboundLogMessageCallable)
+    )
 
     crazyflie_link.crazyflie.connected.add_callback.assert_called()
     crazyflie_link.crazyflie.disconnected.add_callback.assert_called()
@@ -78,17 +82,19 @@ async def test_crazyflie_drone_is_initiated(
 
 
 async def test_initiate_raise_on_connection_timeout(
-    crazyflie_mock: MagicMock, wait_mock: MagicMock, log_config_mock: MagicMock
+    crazyflie_mock: CrazyflieDroneLink, wait_mock: MagicMock, log_config_mock: MagicMock
 ) -> None:
     wait_mock.side_effect = asyncio.TimeoutError
 
     with pytest.raises(CrazyflieCommunicationException):
-        await CrazyflieDroneLink.create(CRAZYFLIE_URI, MagicMock(spec=InboundLogMessageCallable))
+        await CrazyflieDroneLink.create(
+            CRAZYFLIE_URI, MagicMock(spec=InboundLogMessageCallable), MagicMock(spec=InboundLogMessageCallable)
+        )
 
 
 @patch("shutil.rmtree")
 async def test_crazyflie_drone_is_terminated(
-    rm_tree_mock: MagicMock, crazyflie_link_mock: MagicMock, log_config_mock: MagicMock
+    rm_tree_mock: MagicMock, crazyflie_link_mock: CrazyflieDroneLink, log_config_mock: MagicMock
 ) -> None:
     await crazyflie_link_mock.terminate()
 
@@ -97,7 +103,7 @@ async def test_crazyflie_drone_is_terminated(
     rm_tree_mock.assert_called()
 
 
-async def test_set_connection_when_connected(crazyflie_link_mock: MagicMock) -> None:
+async def test_set_connection_when_connected(crazyflie_link_mock: CrazyflieDroneLink) -> None:
     connection_established_event = Event()
     crazyflie_link_mock.connection_established = connection_established_event
 
@@ -107,8 +113,9 @@ async def test_set_connection_when_connected(crazyflie_link_mock: MagicMock) -> 
 
 
 @patch("backend.communication.crazyflie_drone_link.logger.warning")
-async def test_log_on_received_char(logger_mock: MagicMock, crazyflie_link_mock: MagicMock) -> None:
-    crazyflie_link_mock._on_received_char("text")
+@patch("asyncio.run_coroutine_threadsafe")
+async def test_log_on_received_char(logger_mock: MagicMock, _: Any, crazyflie_link_mock: CrazyflieDroneLink) -> None:
+    crazyflie_link_mock._on_received_char("text", loop=MagicMock(spec=AbstractEventLoop))
 
     logger_mock.assert_called()
 
