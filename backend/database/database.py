@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 DATABASE_USERNAME: Final = StringSetting("database.username", fallback="postgres")
 DATABASE_PASSWORD: Final = StringSetting("database.password", fallback="postgres")
 DATABASE_ENDPOINT: Final = StringSetting("database.endpoint", fallback="localhost")
-DATABASE_NAME: Final = StringSetting("database.name", fallback="backend")
+DATABASE_NAME: Final = StringSetting("database.name", fallback="postgres")
 DATABASE_URL: Final = (
     f"postgresql+asyncpg://{str(DATABASE_USERNAME)}:{str(DATABASE_PASSWORD)}@{str(DATABASE_ENDPOINT)}"
     f"/{str(DATABASE_NAME)}"

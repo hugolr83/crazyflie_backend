@@ -6,7 +6,13 @@ from starlette.status import HTTP_204_NO_CONTENT
 
 from backend.communication.command import Command
 from backend.communication.communication import send_command_to_all_drones
-from backend.database.statements import create_new_mission, get_log_message, get_and_update_mission_state, get_mission
+from backend.database.statements import (
+    create_new_mission,
+    get_all_missions,
+    get_log_message,
+    get_and_update_mission_state,
+    get_mission,
+)
 from backend.models.drone import Drone, DroneType
 from backend.models.mission import Log, Mission, MissionState
 from backend.registry import get_registry
@@ -32,6 +38,12 @@ async def get_active_mission(drone_type: DroneType) -> Optional[Mission]:
         return await get_mission(mission_id)
     else:
         return None
+
+
+@router.get("/missions", operation_id="get_missions", response_model=list[Mission])
+async def get_missions() -> list[Mission]:
+    """Return the previously created missions"""
+    return await get_all_missions()
 
 
 @router.post("/mission", operation_id="create_mission", response_model=Mission)

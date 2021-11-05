@@ -35,6 +35,23 @@ async def get_mission(mission_id: int) -> Mission:
     )
 
 
+async def get_all_missions() -> list[Mission]:
+    async with async_session() as session:
+        result = await session.execute(select(SavedMission))
+        saved_missions = result.scalars().all()
+
+    return [
+        Mission(
+            id=saved_mission.id,
+            drone_type=saved_mission.drone_type,
+            state=saved_mission.state,
+            starting_time=saved_mission.starting_time,
+            ending_time=saved_mission.ending_time,
+        )
+        for saved_mission in saved_missions
+    ]
+
+
 async def get_and_update_mission_state(mission_id: int, mission_state: MissionState) -> Mission:
     async with async_session() as session:
         statement = update(SavedMission).where(SavedMission.id == mission_id).values(state=mission_state)
