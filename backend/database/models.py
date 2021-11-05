@@ -13,7 +13,7 @@ class SavedMission(Base):  # type: ignore[misc]
 
     id = Column(sqlalchemy.Integer, autoincrement=True, primary_key=True, index=True)
     drone_type = Column(sqlalchemy.Enum(DroneType))
-    status = Column(sqlalchemy.Enum(MissionState), default=MissionState.CREATED)
+    state = Column(sqlalchemy.Enum(MissionState), default=MissionState.CREATED)
     starting_time = Column(sqlalchemy.DateTime)
     ending_time = Column(sqlalchemy.DateTime, nullable=True)
 
@@ -21,7 +21,7 @@ class SavedMission(Base):  # type: ignore[misc]
         return Mission(
             id=self.id,
             drone_type=self.drone_type,
-            status=self.status,
+            state=self.state,
             starting_time=self.starting_time,
             ending_time=self.ending_time,
         )

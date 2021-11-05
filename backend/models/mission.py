@@ -11,6 +11,7 @@ class MissionState(str, Enum):
     CREATED = "CREATED"
     STARTED = "STARTED"
     ENDED = "ENDED"
+    RETURNED_TO_BASE = "RETURNED_TO_BASE"
 
 
 class Mission(BaseModel):

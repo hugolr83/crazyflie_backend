@@ -14,6 +14,10 @@ from backend.communication.log_message import CrazyflieDebugMessage, LogMessage
 class Registry:
     drones: dict[str, RegisteredDrone] = field(default_factory=dict)
     backend_tasks: list[BackendTask] = field(default_factory=list)
+
+    active_argos_mission_id: Optional[int] = None
+    active_crazyflie_mission_id: Optional[int] = None
+
     _crazyflie_debug_queue: Optional[Queue[CrazyflieDebugMessage]] = None
     _inbound_log_message_queue: Optional[Queue[LogMessage]] = None
     _logging_queue: Optional[Queue[SavedLog]] = None
@@ -59,6 +63,21 @@ class Registry:
 
     def unregister_task(self, task: BackendTask) -> None:
         self.backend_tasks.remove(task)
+
+    def get_active_mission_id(self, drone_type: DroneType) -> Optional[int]:
+        return self.active_argos_mission_id if drone_type == DroneType.ARGOS else self.active_crazyflie_mission_id
+
+    def set_active_mission_id(self, mission_id: int, drone_type: DroneType) -> None:
+        if drone_type == DroneType.ARGOS:
+            self.active_argos_mission_id = mission_id
+        else:
+            self.active_crazyflie_mission_id = mission_id
+
+    def clear_active_mission_id(self, drone_type: DroneType) -> None:
+        if drone_type == DroneType.ARGOS:
+            self.active_argos_mission_id = None
+        else:
+            self.active_crazyflie_mission_id = None
 
     @property
     def argos_drones(self) -> Generator[RegisteredDrone, None, None]:

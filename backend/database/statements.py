@@ -12,7 +12,7 @@ from backend.models.mission import Log, Mission, MissionState
 async def create_new_mission(drone_type: DroneType) -> Mission:
     async with async_session() as session:
         mission = SavedMission(
-            drone_type=drone_type, status=MissionState.CREATED, starting_time=datetime.now(), ending_time=None
+            drone_type=drone_type, state=MissionState.CREATED, starting_time=datetime.now(), ending_time=None
         )
         session.add(mission)
         await session.commit()
@@ -21,11 +21,35 @@ async def create_new_mission(drone_type: DroneType) -> Mission:
     return mission.to_model()
 
 
-async def start_existing_mission(mission_id: int) -> None:
+async def get_mission(mission_id: int) -> Mission:
     async with async_session() as session:
-        statement = update(SavedMission).where(SavedMission.id == mission_id).values(status=MissionState.STARTED)
+        result = await session.execute(select(SavedMission).where(SavedMission.id == mission_id))
+        saved_mission = result.scalars().first()
+
+    return Mission(
+        id=saved_mission.id,
+        drone_type=saved_mission.drone_type,
+        state=saved_mission.state,
+        starting_time=saved_mission.starting_time,
+        ending_time=saved_mission.ending_time,
+    )
+
+
+async def get_and_update_mission_state(mission_id: int, mission_state: MissionState) -> Mission:
+    async with async_session() as session:
+        statement = update(SavedMission).where(SavedMission.id == mission_id).values(state=mission_state)
         await session.execute(statement)
         await session.commit()
+        result = await session.execute(select(SavedMission).where(SavedMission.id == mission_id))
+        saved_mission = result.scalars().first()
+
+    return Mission(
+        id=saved_mission.id,
+        drone_type=saved_mission.drone_type,
+        state=saved_mission.state,
+        starting_time=saved_mission.starting_time,
+        ending_time=saved_mission.ending_time,
+    )
 
 
 async def insert_log_in_database(log_message: SavedLog) -> None:
