@@ -4,14 +4,19 @@ from pydantic import BaseModel
 
 
 class DroneState(str, Enum):
-    NOT_READY = "NOT READY"
+    NOT_READY = "NOT_READY"
     READY = "READY"
-    TAKING_OFF = "TAKING OFF"
+    TAKING_OFF = "TAKING_OFF"
     LANDING = "LANDING"
     HOVERING = "HOVERING"
     EXPLORING = "EXPLORING"
-    RETURNING_BASE = "RETURNING BASE"
+    RETURNING_BASE = "RETURNING_BASE"
     CRASHED = "CRASHED"
+
+
+class DroneConnectionState(str, Enum):
+    CONNECTED = "CONNECTED"
+    DISCONNECTED = "DISCONNECTED"
 
 
 class DroneType(str, Enum):
@@ -50,3 +55,4 @@ class Drone(BaseModel):
     position: DroneVec3
     orientation: Orientation
     range: DroneRange
+    connection_state: DroneConnectionState

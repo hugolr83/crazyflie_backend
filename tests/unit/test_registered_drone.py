@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 from backend.communication.drone_link import DroneLink
-from backend.communication.log_message import BatteryAndPositionLogMessage, FullLogMessage, RangeLogMessage
+from backend.communication.messages import BatteryAndPositionLogMessage, FullLogMessage, RangeLogMessage
 from backend.models.drone import DroneBattery, DroneRange, DroneVec3
 from backend.registered_drone import RegisteredDrone
 

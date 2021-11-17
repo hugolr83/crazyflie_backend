@@ -7,15 +7,17 @@ from unittest.mock import MagicMock, patch
 import pytest
 from cflib.crazyflie.log import LogTocElement, LogVariable
 
-from backend.communication.log_message import (
+from backend.communication.callbacks import (
+    on_incoming_argos_log_message,
+    on_incoming_crazyflie_log_message,
+)
+from backend.communication.messages import (
     BatteryAndPositionLogMessage,
     CRAZYFLIE_LOG_CONFIGS,
     FullLogMessage,
     LogMessage,
     RangeLogMessage,
     generate_log_configs,
-    on_incoming_argos_log_message,
-    on_incoming_crazyflie_log_message,
 )
 
 # All test coroutines will be treated as marked
@@ -96,16 +98,6 @@ async def test_crazyflie_messages_are_queued_on_incoming_range_message() -> None
 
     message = await asyncio.wait_for(queue.get(), 0.1)
     assert message == log_message
-
-
-@patch("backend.communication.log_message.logger")
-async def test_errors_are_logged_on_unsupported_config_name(logger_mock: MagicMock) -> None:
-    log_config = next(generate_log_configs())
-    log_config.name = "bAdNaMe"
-
-    await on_incoming_crazyflie_log_message("", Queue(), 0, {}, log_config)
-
-    logger_mock.error.assert_called()
 
 
 async def test_argos_messages_are_queued_on_incoming_message() -> None:

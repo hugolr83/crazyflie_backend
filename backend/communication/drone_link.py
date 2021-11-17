@@ -18,5 +18,14 @@ class DroneLink(ABC):
         ...  # pragma: no cover
 
     @abstractmethod
+    async def reconnect(self) -> None:
+        ...  # pragma: no cover
+
+    @abstractmethod
     async def send_command(self, command: Command) -> None:
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def is_connected(self) -> bool:
         ...  # pragma: no cover

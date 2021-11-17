@@ -4,14 +4,23 @@ from typing import Optional
 
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.drone_link import DroneLink
-from backend.communication.log_message import (
+from backend.communication.messages import (
     BatteryAndPositionLogMessage,
+    DRONE_STATES,
     FullLogMessage,
     LogMessage,
     RangeLogMessage,
-    STATES,
 )
-from backend.models.drone import Drone, DroneBattery, DroneRange, DroneState, DroneType, DroneVec3, Orientation
+from backend.models.drone import (
+    Drone,
+    DroneBattery,
+    DroneConnectionState,
+    DroneRange,
+    DroneState,
+    DroneType,
+    DroneVec3,
+    Orientation,
+)
 
 
 @dataclass
@@ -33,6 +42,10 @@ class RegisteredDrone:
     def drone_type(self) -> DroneType:
         return DroneType.ARGOS if isinstance(self.link, ArgosDroneLink) else DroneType.CRAZYFLIE
 
+    @property
+    def connection_state(self) -> DroneConnectionState:
+        return DroneConnectionState.CONNECTED if self.link.is_connected else DroneConnectionState.DISCONNECTED
+
     @singledispatchmethod
     def update_from_log_message(self, log_message: LogMessage) -> None:
         raise NotImplementedError("log_message must be an instance of a child class of LogMessage")  # pragma: no cover
@@ -44,7 +57,7 @@ class RegisteredDrone:
             x=log_message.kalman_state_x, y=log_message.kalman_state_y, z=log_message.kalman_state_z
         )
         self.orientation = Orientation(yaw=log_message.state_estimate_yaw)
-        self.state = STATES[log_message.drone_state]
+        self.state = DRONE_STATES[log_message.drone_state]
 
     @update_from_log_message.register
     def _update_range(self, log_message: RangeLogMessage) -> None:
@@ -71,4 +84,5 @@ class RegisteredDrone:
             position=self.position,
             orientation=self.orientation,
             range=self.range,
+            connection_state=self.connection_state,
         )

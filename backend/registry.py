@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Generator, Optional
 
-from backend.communication.log_message import CrazyflieDebugMessage, LogMessage
+from backend.communication.messages import CrazyflieDebugMessage, LogMessage
 from backend.database.models import SavedLog
 from backend.models.drone import DroneType
 from backend.registered_drone import RegisteredDrone

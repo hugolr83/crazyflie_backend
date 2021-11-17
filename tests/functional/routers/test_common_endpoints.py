@@ -26,7 +26,8 @@ class GetDronesTestCase:
 
 ARGOS_DRONE_RESPONSE: Final = {
     "uuid": ARGOS_UUID,
-    "state": "NOT READY",
+    "state": "NOT_READY",
+    "connection_state": "CONNECTED",
     "type": "ARGOS",
     "battery": {"charge_percentage": 2},
     "position": {"x": 1.2, "y": 3.6, "z": 2.53},
@@ -37,6 +38,7 @@ ARGOS_DRONE_RESPONSE: Final = {
 CRAZYFLIE_DRONE_RESPONSE: Final = {
     "uuid": CRAZYFLIE_UUID,
     "state": "CRASHED",
+    "connection_state": "CONNECTED",
     "type": "CRAZYFLIE",
     "battery": {"charge_percentage": 90},
     "position": {"x": 99.1, "y": 1919.2, "z": 3.2},

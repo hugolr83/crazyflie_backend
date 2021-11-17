@@ -11,13 +11,13 @@ from coveo_settings import IntSetting, StringSetting
 from fastapi.logger import logger
 
 from backend.communication.argos_drone_link import ArgosDroneLink
-from backend.communication.command import Command
-from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
-from backend.communication.log_message import (
+from backend.communication.callbacks import (
     on_incoming_argos_log_message,
     on_incoming_crazyflie_debug_message,
     on_incoming_crazyflie_log_message,
 )
+from backend.communication.command import Command
+from backend.communication.crazyflie_drone_link import CrazyflieDroneLink
 from backend.database.models import SavedLog
 from backend.exceptions.communication import CrazyflieCommunicationException
 from backend.models.drone import Drone

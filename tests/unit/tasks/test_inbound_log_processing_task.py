@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
-from backend.communication.log_message import LogMessage
+from backend.communication.messages import LogMessage
 from backend.registered_drone import RegisteredDrone
 from backend.registry import Registry
 from backend.tasks.inbound_log_processing_task import InboundLogProcessingTask

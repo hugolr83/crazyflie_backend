@@ -1,5 +1,5 @@
 import struct
-from asyncio import CancelledError, StreamReader, StreamWriter, Task
+from asyncio import CancelledError, Event, StreamReader, StreamWriter, Task
 from typing import Final, Generator
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -8,7 +8,6 @@ import pytest
 from backend.communication.argos_drone_link import ArgosDroneLink
 from backend.communication.command import Command
 from backend.communication.drone_link import InboundLogMessageCallable
-from backend.exceptions.communication import ArgosCommunicationException
 
 # All test coroutines will be treated as marked
 pytestmark = pytest.mark.asyncio
@@ -49,15 +48,15 @@ async def test_argos_drone_link_is_initiated(connection_mock: MagicMock, create_
     create_task_mock.assert_called()
 
 
-async def test_argos_drone_link_raise_on_connection_error(
+async def test_argos_drone_link_is_disconnected_on_connection_error(
     connection_mock: MagicMock, create_task_mock: MagicMock
 ) -> None:
     connection_mock.side_effect = OSError
 
-    with patch.object(ArgosDroneLink, "process_incoming_message", return_value=AsyncMock()), pytest.raises(
-        ArgosCommunicationException
-    ):
-        await ArgosDroneLink.create(ARGOS_ENDPOINT, ARGOS_PORT, MagicMock(spec=InboundLogMessageCallable))
+    with patch.object(ArgosDroneLink, "process_incoming_message", return_value=AsyncMock()):
+        link = await ArgosDroneLink.create(ARGOS_ENDPOINT, ARGOS_PORT, MagicMock(spec=InboundLogMessageCallable))
+        assert link.reader is None
+        assert link.writer is None
 
 
 @pytest.mark.parametrize("with_task", [True, False])
@@ -71,6 +70,7 @@ async def test_resources_are_liberated_on_termination(with_task: bool) -> None:
         MagicMock(spec=StreamReader),
         writer_mock,
         MagicMock(spec=InboundLogMessageCallable),
+        MagicMock(spec=Event),
         task_mock,
     )
     await drone_link.terminate()
@@ -93,6 +93,7 @@ async def test_incoming_messages_are_processed() -> None:
         reader_mock,
         MagicMock(spec=StreamWriter),
         on_incoming_message_callable,
+        MagicMock(spec=Event),
         None,
     )
 
@@ -110,6 +111,7 @@ async def test_commands_are_properly_sent(command: Command) -> None:
         MagicMock(spec=StreamReader),
         writer_mock,
         MagicMock(spec=InboundLogMessageCallable),
+        MagicMock(spec=Event),
         None,
     )
 

@@ -16,7 +16,7 @@ from fastapi.logger import logger
 
 from backend.communication.command import Command
 from backend.communication.drone_link import DroneLink, InboundLogMessageCallable
-from backend.communication.log_message import generate_log_configs
+from backend.communication.messages import generate_log_configs
 from backend.exceptions.communication import CrazyflieCommunicationException
 
 CRAZYFLIE_CONNECTION_TIMEOUT: Final = 15
@@ -76,6 +76,9 @@ class CrazyflieDroneLink(DroneLink):
             self.crazyflie.log.add_config(log_config)
             await asyncio.to_thread(log_config.start)
 
+    async def reconnect(self) -> None:
+        ...
+
     async def terminate(self) -> None:
         for log_config in self.log_configs:
             await asyncio.to_thread(log_config.stop)
@@ -90,7 +93,6 @@ class CrazyflieDroneLink(DroneLink):
         logger.warning(f"Log from Crazyflie {self.uri}: {text}")
         asyncio.run_coroutine_threadsafe(self.on_debug_log_message(message=text), loop)
 
-    # TODO: handle disconnections and connection error
     def _on_connection_failed(self, link_uri: str, msg: Any, loop: AbstractEventLoop) -> None:
         logger.error(f"Connection to {link_uri} failed: {msg}")
         loop.call_soon_threadsafe(self.connection_established.clear)
@@ -113,3 +115,7 @@ class CrazyflieDroneLink(DroneLink):
     async def send_command(self, command: Command) -> None:
         await asyncio.wait_for(self.connection_established.wait(), timeout=CRAZYFLIE_CONNECTION_TIMEOUT)
         await asyncio.to_thread(self.crazyflie.appchannel.send_packet, data=struct.pack("I", command.value))
+
+    @property
+    def is_connected(self) -> bool:
+        return self.connection_established.is_set()
