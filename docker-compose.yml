@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - backend_local_testing
+  backend:
+    build: .
+    environment:
+      - DATABASE_ENDPOINT=postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - backend_local_testing
+    depends_on:
+      - postgres
+networks:
+  backend_local_testing:
