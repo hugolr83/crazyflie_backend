@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, Final
+from typing import Final
 
 from coveo_settings import StringSetting
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
