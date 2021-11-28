@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.7.1 (2021-11-28)
+### Fix
+* Add retry for database connection ([`81023e2`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/81023e2f6eb59186746bdfb21ebc6093237a4f97))
+
 ## v1.7.0 (2021-11-05)
 ### Feature
 * Added endpoints to get missions ([`4f6bf66`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/4f6bf667df1b8317f7ceb66f7ff0eac4c67f1d60))
