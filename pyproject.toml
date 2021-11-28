@@ -70,6 +70,7 @@ pydantic = "^1.8.2"
 PyYAML = "^5.4.1"
 SQLAlchemy = "^1.4.26"
 watchgod = "^0.7"
+tenacity = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.8b0"
