@@ -2,7 +2,6 @@ from itertools import count, islice
 from logging import Logger
 from typing import Final, Generator
 from unittest.mock import MagicMock, call, patch
-from uuid import UUID
 
 import pytest
 from coveo_settings.mock import mock_config_value

@@ -1,4 +1,3 @@
-import uuid
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Generator

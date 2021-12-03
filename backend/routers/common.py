@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional
 
 from fastapi import APIRouter
 
@@ -9,16 +9,16 @@ from backend.database.statements import (
     create_new_mission,
     get_all_missions,
     get_drones_positions,
-    update_mission_state,
     get_log_message,
     get_mission,
+    update_mission_state,
 )
 from backend.exceptions.response import (
     DroneNotFoundException,
     InvalidMissionStateException,
     MissionIsAlreadyActiveException,
 )
-from backend.models.drone import Drone, DronePositionOrientation, DroneType, DroneVec3
+from backend.models.drone import Drone, DronePositionOrientation, DroneType
 from backend.models.mission import DronesPositions, Log, Mission, MissionState
 from backend.registry import get_registry
 from backend.routers.utils import generate_responses_documentation
