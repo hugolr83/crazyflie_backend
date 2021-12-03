@@ -26,8 +26,13 @@ STATES: Final = {
 
 @dataclass
 class LogMessage:
-    drone_uuid: str
+    drone_id: int
     timestamp: int
+
+    @property
+    def position_updated(self) -> bool:
+        """LogMessage isn't really abstract because of interactions between dataclasses and ABC"""
+        raise NotImplementedError("LogMessage is an abstract base class")
 
 
 # Since the bandwith with Crazyflie is limited, we need to send the data in multiple packets
@@ -40,6 +45,10 @@ class BatteryAndPositionLogMessage(LogMessage):
     drone_state: int
     drone_battery_level: int
 
+    @property
+    def position_updated(self) -> bool:
+        return True
+
 
 @dataclass
 class RangeLogMessage(LogMessage):
@@ -50,16 +59,22 @@ class RangeLogMessage(LogMessage):
     range_right: int
     range_zrange: int
 
+    @property
+    def position_updated(self) -> bool:
+        return False
+
 
 # No need to split packets from Argos simulated drones
 @dataclass
 class FullLogMessage(BatteryAndPositionLogMessage, RangeLogMessage):
-    pass
+    @property
+    def position_updated(self) -> bool:
+        return True
 
 
 @dataclass
 class CrazyflieDebugMessage:
-    drone_uuid: str
+    drone_id: int
     timestamp: datetime.datetime
     message: str
 
@@ -118,27 +133,27 @@ def generate_log_configs() -> Generator[LogConfig, None, None]:
 
 
 async def on_incoming_crazyflie_log_message(
-    drone_uuid: str, inbound_queue: Queue[LogMessage], timestamp: int, data: dict[str, Any], log_config: LogConfig
+    drone_id: int, inbound_queue: Queue[LogMessage], timestamp: int, data: dict[str, Any], log_config: LogConfig
 ) -> None:
     log_message_type = next(
         (config.dataclass for config in CRAZYFLIE_LOG_CONFIGS if log_config.name == config.name), None
     )
 
     if log_message_type:
-        incoming_data = data | {"drone_uuid": drone_uuid, "timestamp": timestamp}
+        incoming_data = data | {"drone_id": drone_id, "timestamp": timestamp}
         await inbound_queue.put(flex.deserialize(value=incoming_data, hint=log_message_type))
     else:
         logger.error(f"LogConfig with name {log_config.name} is unknown")
 
 
 async def on_incoming_crazyflie_debug_message(
-    message: str, drone_uuid: str, crazyflie_debug_queue: Queue[CrazyflieDebugMessage]
+    message: str, drone_id: int, crazyflie_debug_queue: Queue[CrazyflieDebugMessage]
 ) -> None:
     await crazyflie_debug_queue.put(
-        CrazyflieDebugMessage(drone_uuid=drone_uuid, timestamp=datetime.datetime.now(), message=message)
+        CrazyflieDebugMessage(drone_id=drone_id, timestamp=datetime.datetime.utcnow(), message=message)
     )
 
 
-async def on_incoming_argos_log_message(drone_uuid: str, inbound_queue: Queue[LogMessage], data: bytes) -> None:
-    incoming_data = json.loads(data) | {"drone_uuid": drone_uuid}
+async def on_incoming_argos_log_message(drone_id: int, inbound_queue: Queue[LogMessage], data: bytes) -> None:
+    incoming_data = json.loads(data) | {"drone_id": drone_id}
     await inbound_queue.put(flex.deserialize(value=incoming_data, hint=FullLogMessage))

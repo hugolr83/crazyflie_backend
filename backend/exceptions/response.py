@@ -1,8 +1,10 @@
+from collections import Sequence
 from http import HTTPStatus
 
 from fastapi import HTTPException
 
 from backend.models.drone import DroneType
+from backend.models.mission import MissionState
 
 
 class ResponseException(HTTPException):
@@ -16,10 +18,10 @@ class ResponseException(HTTPException):
 
 
 class DroneNotFoundException(ResponseException):
-    def __init__(self, uuid: str) -> None:
+    def __init__(self, drone_id: int) -> None:
         super().__init__(
             status_code=self.http_status_code(),
-            detail=f"Drone with uuid {uuid} doesn't exist or isn't registered anymore",
+            detail=f"Drone with id {drone_id} doesn't exist or isn't registered anymore",
         )
 
     @classmethod
@@ -45,3 +47,44 @@ class WrongDroneTypeException(ResponseException):
     @classmethod
     def description(cls) -> str:
         return "API call is not supported on the provided drone type"
+
+
+class InvalidMissionStateException(ResponseException):
+    def __init__(
+        self,
+        current_state: MissionState,
+        desired_state: MissionState,
+        allowed_states: Sequence[MissionState],
+    ) -> None:
+        super().__init__(
+            status_code=self.http_status_code(),
+            detail=(
+                f"Impossible to set state {desired_state.name} since current mission state is "
+                f"{current_state}. Current state must be "
+                f"{', '.join((allowed_mission_state.name for allowed_mission_state in allowed_states))}"
+            ),
+        )
+
+    @classmethod
+    def http_status_code(cls) -> int:
+        return int(HTTPStatus.BAD_REQUEST)
+
+    @classmethod
+    def description(cls) -> str:
+        return "Mission state transition isn't possible"
+
+
+class MissionIsAlreadyActiveException(ResponseException):
+    def __init__(self, existing_mission_id: int, drone_type: DroneType) -> None:
+        super().__init__(
+            status_code=self.http_status_code(),
+            detail=f"Active mission for drone type {drone_type.name} already exists (id: {existing_mission_id})",
+        )
+
+    @classmethod
+    def http_status_code(cls) -> int:
+        return int(HTTPStatus.BAD_REQUEST)
+
+    @classmethod
+    def description(cls) -> str:
+        return "A mission for that drone type is already existing"

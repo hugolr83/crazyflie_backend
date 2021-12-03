@@ -12,7 +12,7 @@ from backend.tasks.backend_task import BackendTask
 
 @dataclass
 class Registry:
-    drones: dict[str, RegisteredDrone] = field(default_factory=dict)
+    drones: dict[int, RegisteredDrone] = field(default_factory=dict)
     backend_tasks: list[BackendTask] = field(default_factory=list)
 
     active_argos_mission_id: Optional[int] = None
@@ -21,9 +21,10 @@ class Registry:
     _crazyflie_debug_queue: Optional[Queue[CrazyflieDebugMessage]] = None
     _inbound_log_message_queue: Optional[Queue[LogMessage]] = None
     _logging_queue: Optional[Queue[SavedLog]] = None
+    _mission_termination_queue: Optional[Queue[DroneType]] = None
 
-    def get_drone(self, drone_uuid: str) -> Optional[RegisteredDrone]:
-        return self.drones.get(drone_uuid)
+    def get_drone(self, drone_id: int) -> Optional[RegisteredDrone]:
+        return self.drones.get(drone_id)
 
     def get_drones(self, drone_type: Optional[DroneType]) -> Generator[RegisteredDrone, None, None]:
         if drone_type:
@@ -46,17 +47,24 @@ class Registry:
         assert self._logging_queue
         return self._logging_queue
 
+    @property
+    def mission_termination_queue(self) -> Queue[DroneType]:
+        assert self._mission_termination_queue
+        return self._mission_termination_queue
+
     async def initialize_queues(self) -> None:
+        """The lazy initialization is needed to map the Queue to the correct event loop"""
         self._inbound_log_message_queue = Queue()
         self._logging_queue = Queue()
         self._crazyflie_debug_queue = Queue()
+        self._mission_termination_queue = Queue()
 
     def register_drone(self, drone: RegisteredDrone) -> None:
-        self.drones[drone.uuid] = drone
+        self.drones[drone.id] = drone
 
     def unregister_drone(self, drone: RegisteredDrone) -> None:
-        if self.drones.get(drone.uuid):
-            del self.drones[drone.uuid]
+        if self.drones.get(drone.id):
+            del self.drones[drone.id]
 
     def register_task(self, task: BackendTask) -> None:
         self.backend_tasks.append(task)
