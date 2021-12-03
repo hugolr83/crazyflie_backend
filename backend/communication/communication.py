@@ -31,7 +31,7 @@ ARGOS_NUMBER_OF_DRONES: Final = IntSetting("argos.number_of_drones", fallback=2)
 
 CRAZYFLIE_ADDRESSES: Final = [0xE7E7E7EE01, 0xE7E7E7EE02]
 
-next_available_id = 0
+next_available_id: int = 0
 
 
 def get_next_available_drone_id() -> int:
