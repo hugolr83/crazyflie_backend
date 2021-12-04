@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 
 from backend.communication.command import Command
 from backend.registry import Registry
-from tests.functional.conftest import ARGOS_UUID, CRAZYFLIE_UUID
+from tests.functional.conftest import ARGOS_ID, CRAZYFLIE_ID
 
 
 @pytest.fixture()
@@ -25,23 +25,25 @@ class GetDronesTestCase:
 
 
 ARGOS_DRONE_RESPONSE: Final = {
-    "uuid": ARGOS_UUID,
+    "id": ARGOS_ID,
     "state": "NOT READY",
     "type": "ARGOS",
     "battery": {"charge_percentage": 2},
     "position": {"x": 1.2, "y": 3.6, "z": 2.53},
     "orientation": {"yaw": 40.0},
     "range": {"front": 412312, "back": 1223, "up": 134, "left": 2, "right": 18, "bottom": 181},
+    "total_distance": 0.0,
 }
 
 CRAZYFLIE_DRONE_RESPONSE: Final = {
-    "uuid": CRAZYFLIE_UUID,
+    "id": CRAZYFLIE_ID,
     "state": "CRASHED",
     "type": "CRAZYFLIE",
     "battery": {"charge_percentage": 90},
     "position": {"x": 99.1, "y": 1919.2, "z": 3.2},
     "orientation": {"yaw": 40.0},
     "range": {"front": 42661, "back": 123242, "up": 734, "left": 90, "right": 178, "bottom": 922},
+    "total_distance": 0.0,
 }
 
 

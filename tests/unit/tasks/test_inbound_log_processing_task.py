@@ -17,7 +17,7 @@ pytestmark = pytest.mark.asyncio
 @pytest.fixture()
 def mocked_message() -> Generator[MagicMock, None, None]:
     mocked_message = MagicMock(spec=LogMessage)
-    type(mocked_message).drone_uuid = PropertyMock(return_value="uuid")
+    type(mocked_message).drone_id = PropertyMock(return_value=1)
     yield mocked_message
 
 

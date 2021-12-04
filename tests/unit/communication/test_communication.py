@@ -2,7 +2,6 @@ from itertools import count, islice
 from logging import Logger
 from typing import Final, Generator
 from unittest.mock import MagicMock, call, patch
-from uuid import UUID
 
 import pytest
 from coveo_settings.mock import mock_config_value
@@ -40,18 +39,26 @@ def crtp_mock() -> Generator[MagicMock, None, None]:
         yield mocked_crtp
 
 
+@pytest.fixture(autouse=True)
+def create_drone_bd_mock() -> Generator[MagicMock, None, None]:
+    with patch("backend.communication.communication.create_drone") as create_drone_mock:
+        yield create_drone_mock
+
+
 DRONE_PORT: Final = 6969
 
 
 def assert_drone_is_registered(mocked_drone_link: MagicMock, registry_mock: MagicMock) -> None:
     registry_mock.register_drone.assert_called()
     assert isinstance(registry_mock.register_drone.call_args.args[0], RegisteredDrone)
-    assert UUID(registry_mock.register_drone.call_args.args[0].uuid)
+    assert isinstance(registry_mock.register_drone.call_args.args[0].id, int)
     assert registry_mock.register_drone.call_args.args[0].link == mocked_drone_link
 
 
 @patch.object(ArgosDroneLink, "create")
-async def test_initiate_argos_drone_link(create_argos_drone_mock: MagicMock, registry_mock: MagicMock) -> None:
+async def test_initiate_argos_drone_link(
+    create_argos_drone_mock: MagicMock, registry_mock: MagicMock, create_drone_bd_mock: MagicMock
+) -> None:
     mocked_argos_drone_link = MagicMock(spec=ArgosDroneLink)
     create_argos_drone_mock.return_value = mocked_argos_drone_link
 
@@ -62,11 +69,15 @@ async def test_initiate_argos_drone_link(create_argos_drone_mock: MagicMock, reg
     assert create_argos_drone_mock.call_args.args[1] == DRONE_PORT
     assert callable(create_argos_drone_mock.call_args.args[2])
     assert_drone_is_registered(mocked_argos_drone_link, registry_mock)
+    create_drone_bd_mock.assert_called()
 
 
 @patch.object(CrazyflieDroneLink, "create")
 async def test_initiate_crazyflie_drone_link(
-    create_crazyflie_drone_mock: MagicMock, crtp_mock: MagicMock, registry_mock: MagicMock
+    create_crazyflie_drone_mock: MagicMock,
+    crtp_mock: MagicMock,
+    registry_mock: MagicMock,
+    create_drone_bd_mock: MagicMock,
 ) -> None:
     expected_drone_uri = "radio://0/80/2M/6969696969"
     crtp_mock.scan_interfaces.return_value = [[expected_drone_uri], [None]]
@@ -79,6 +90,7 @@ async def test_initiate_crazyflie_drone_link(
     assert create_crazyflie_drone_mock.call_args.args[0] == expected_drone_uri
     assert callable(create_crazyflie_drone_mock.call_args.args[1])
     assert_drone_is_registered(mocked_crazyflie_drone_link, registry_mock)
+    create_drone_bd_mock.assert_called()
 
 
 async def test_initiate_crazyflie_drone_link_raise_when_drone_not_found(crtp_mock: MagicMock) -> None:

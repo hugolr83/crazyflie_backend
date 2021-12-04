@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import singledispatchmethod
+from math import sqrt
 from typing import Optional
 
 from backend.communication.argos_drone_link import ArgosDroneLink
@@ -11,12 +12,21 @@ from backend.communication.log_message import (
     RangeLogMessage,
     STATES,
 )
-from backend.models.drone import Drone, DroneBattery, DroneRange, DroneState, DroneType, DroneVec3, Orientation
+from backend.models.drone import (
+    Drone,
+    DroneBattery,
+    DronePositionOrientation,
+    DroneRange,
+    DroneState,
+    DroneType,
+    DroneVec3,
+    Orientation,
+)
 
 
 @dataclass
 class RegisteredDrone:
-    uuid: str
+    id: int
     link: DroneLink
     state: DroneState = DroneState.NOT_READY
     battery: DroneBattery = DroneBattery(charge_percentage=0, voltage=0.0)
@@ -24,14 +34,26 @@ class RegisteredDrone:
     orientation: Orientation = Orientation(yaw=0.0)
     range: DroneRange = DroneRange(front=0.0, back=0.0, up=0.0, left=0.0, right=0.0, bottom=0.0)
     active_mission_id: Optional[int] = None
+    total_distance: float = 0.0
 
     def get_active_mission_id_or_raise(self) -> int:
         assert self.active_mission_id
         return self.active_mission_id
 
+    def get_distance_relative_to_current_position(self, new_position: DroneVec3) -> float:
+        return sqrt(
+            (new_position.x - self.position.x) ** 2
+            + (new_position.y - self.position.y) ** 2
+            + (new_position.z - self.position.z) ** 2
+        )
+
     @property
     def drone_type(self) -> DroneType:
         return DroneType.ARGOS if isinstance(self.link, ArgosDroneLink) else DroneType.CRAZYFLIE
+
+    @property
+    def is_flying(self) -> bool:
+        return self.state not in (DroneState.NOT_READY, DroneState.READY, DroneState.CRASHED)
 
     @singledispatchmethod
     def update_from_log_message(self, log_message: LogMessage) -> None:
@@ -40,9 +62,11 @@ class RegisteredDrone:
     @update_from_log_message.register
     def _update_battery_and_position(self, log_message: BatteryAndPositionLogMessage) -> None:
         self.battery = DroneBattery(charge_percentage=log_message.drone_battery_level)
-        self.position = DroneVec3(
+        new_position = DroneVec3(
             x=log_message.kalman_state_x, y=log_message.kalman_state_y, z=log_message.kalman_state_z
         )
+        self.total_distance += self.get_distance_relative_to_current_position(new_position)
+        self.position = new_position
         self.orientation = Orientation(yaw=log_message.state_estimate_yaw)
         self.state = STATES[log_message.drone_state]
 
@@ -62,13 +86,19 @@ class RegisteredDrone:
         self._update_battery_and_position(log_message)
         self._update_range(log_message)
 
+    def set_position(self, new_position: DronePositionOrientation) -> None:
+        self.position = new_position.position
+        self.orientation = new_position.orientation
+        self.total_distance = 0.0
+
     def to_model(self) -> Drone:
         return Drone(
-            uuid=self.uuid,
+            id=self.id,
             state=self.state,
             type=self.drone_type,
             battery=self.battery,
             position=self.position,
             orientation=self.orientation,
             range=self.range,
+            total_distance=self.total_distance,
         )

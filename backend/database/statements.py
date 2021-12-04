@@ -1,18 +1,25 @@
+from collections import defaultdict
 from datetime import datetime
+from typing import Iterable
 
 from fastapi.logger import logger
 from sqlalchemy import select, update
 
 from backend.database.database import async_session
-from backend.database.models import SavedLog, SavedMission
-from backend.models.drone import DroneType
-from backend.models.mission import Log, Mission, MissionState
+from backend.database.models import DroneMissionAssociation, SavedDrone, SavedLog, SavedMission, SavedPosition
+from backend.models.drone import DroneType, DroneVec3
+from backend.models.mission import DronesPositions, Log, Mission, MissionState
+from backend.registered_drone import RegisteredDrone
 
 
 async def create_new_mission(drone_type: DroneType) -> Mission:
     async with async_session() as session:
         mission = SavedMission(
-            drone_type=drone_type, state=MissionState.CREATED, starting_time=datetime.now(), ending_time=None
+            drone_type=drone_type,
+            state=MissionState.CREATED,
+            total_distance=0,
+            starting_time=datetime.utcnow(),
+            ending_time=None,
         )
         session.add(mission)
         await session.commit()
@@ -26,10 +33,14 @@ async def get_mission(mission_id: int) -> Mission:
         result = await session.execute(select(SavedMission).where(SavedMission.id == mission_id))
         saved_mission = result.scalars().first()
 
+    if saved_mission is None:
+        raise RuntimeError("Mission doesn't exist")
+
     return Mission(
         id=saved_mission.id,
         drone_type=saved_mission.drone_type,
         state=saved_mission.state,
+        total_distance=saved_mission.total_distance,
         starting_time=saved_mission.starting_time,
         ending_time=saved_mission.ending_time,
     )
@@ -45,6 +56,7 @@ async def get_all_missions() -> list[Mission]:
             id=saved_mission.id,
             drone_type=saved_mission.drone_type,
             state=saved_mission.state,
+            total_distance=saved_mission.total_distance,
             starting_time=saved_mission.starting_time,
             ending_time=saved_mission.ending_time,
         )
@@ -52,21 +64,26 @@ async def get_all_missions() -> list[Mission]:
     ]
 
 
-async def get_and_update_mission_state(mission_id: int, mission_state: MissionState) -> Mission:
+async def update_mission_state(mission_id: int, mission_state: MissionState) -> Mission:
     async with async_session() as session:
         statement = update(SavedMission).where(SavedMission.id == mission_id).values(state=mission_state)
         await session.execute(statement)
         await session.commit()
-        result = await session.execute(select(SavedMission).where(SavedMission.id == mission_id))
-        saved_mission = result.scalars().first()
 
-    return Mission(
-        id=saved_mission.id,
-        drone_type=saved_mission.drone_type,
-        state=saved_mission.state,
-        starting_time=saved_mission.starting_time,
-        ending_time=saved_mission.ending_time,
-    )
+    return await get_mission(mission_id)
+
+
+async def end_mission(mission_id: int, total_distance: float) -> Mission:
+    async with async_session() as session:
+        statement = (
+            update(SavedMission)
+            .where(SavedMission.id == mission_id)
+            .values(state=MissionState.ENDED, total_distance=total_distance, ending_time=datetime.utcnow())
+        )
+        await session.execute(statement)
+        await session.commit()
+
+    return await get_mission(mission_id)
 
 
 async def insert_log_in_database(log_message: SavedLog) -> None:
@@ -87,3 +104,37 @@ async def get_log_message(mission_id: int, starting_id: int) -> list[Log]:
         Log(id=row.id, mission_id=row.mission_id, timestamp=row.timestamp, message=row.message)
         for row in rows.scalars()
     ]
+
+
+async def create_drone(drone: RegisteredDrone) -> None:
+    async with async_session() as session:
+        drone = SavedDrone(id=drone.id, drone_type=drone.drone_type)
+        session.add(drone)
+        await session.commit()
+
+
+async def create_position(position: DroneVec3, drone_id: int, mission_id: int) -> None:
+    async with async_session() as session:
+        position = SavedPosition(x=position.x, y=position.y, z=position.y, drone_id=drone_id, mission_id=mission_id)
+        session.add(position)
+        await session.commit()
+
+
+async def create_drones_mission_association(drones: Iterable[RegisteredDrone], mission_id: int) -> None:
+    async with async_session() as session:
+        for drone in drones:
+            association = DroneMissionAssociation(drone_id=drone.id, mission_id=mission_id)
+            session.add(association)
+        await session.commit()
+
+
+async def get_drones_positions(mission_id: int) -> DronesPositions:
+    async with async_session() as session:
+        statement = select(SavedPosition).filter(SavedPosition.mission_id == mission_id)
+        rows = await session.execute(statement)
+
+    positions = defaultdict(list)
+    for row in rows.scalars():
+        positions[row.drone_id].append(DroneVec3(x=row.x, y=row.y, z=row.z))
+
+    return DronesPositions(positions=positions)

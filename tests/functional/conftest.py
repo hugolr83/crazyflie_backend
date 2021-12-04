@@ -11,8 +11,8 @@ from backend.models.drone import DroneBattery, DroneRange, DroneState, DroneVec3
 from backend.registered_drone import RegisteredDrone
 from backend.registry import Registry
 
-ARGOS_UUID: Final = "a20b6bfb-ba57-412d-9a45-af331ee6d187"
-CRAZYFLIE_UUID: Final = "b39fb265-7272-4206-bef9-325d25d77414"
+ARGOS_ID: Final = 1
+CRAZYFLIE_ID: Final = 2
 
 
 @pytest.fixture(scope="session")
@@ -33,7 +33,7 @@ def mocked_crazyflie_link() -> Generator[MagicMock, None, None]:
 @pytest.fixture()
 def registry_mock(mocked_argos_link: MagicMock, mocked_crazyflie_link: MagicMock) -> Generator[Registry, None, None]:
     argos_drone = RegisteredDrone(
-        ARGOS_UUID,
+        ARGOS_ID,
         mocked_argos_link,
         DroneState.NOT_READY,
         DroneBattery(charge_percentage=2, voltage=3.4),
@@ -42,7 +42,7 @@ def registry_mock(mocked_argos_link: MagicMock, mocked_crazyflie_link: MagicMock
         DroneRange(front=412312, back=1223, up=134, left=2, right=18, bottom=181),
     )
     crazyflie_drone = RegisteredDrone(
-        CRAZYFLIE_UUID,
+        CRAZYFLIE_ID,
         mocked_crazyflie_link,
         DroneState.CRASHED,
         DroneBattery(charge_percentage=90, voltage=4.1),
@@ -52,8 +52,8 @@ def registry_mock(mocked_argos_link: MagicMock, mocked_crazyflie_link: MagicMock
     )
     mocked_registry = Registry(
         drones={
-            ARGOS_UUID: argos_drone,
-            CRAZYFLIE_UUID: crazyflie_drone,
+            ARGOS_ID: argos_drone,
+            CRAZYFLIE_ID: crazyflie_drone,
         }
     )
     yield mocked_registry

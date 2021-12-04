@@ -13,8 +13,8 @@ class InboundDebugCrazyflieMessageTask(BackendTask):
         try:
             registry = get_registry()
             while crazyflie_debug_message := await registry.crazyflie_debug_queue.get():
-                if not (drone := registry.get_drone(crazyflie_debug_message.drone_uuid)):
-                    logger.error(f"Drone with uuid {crazyflie_debug_message.drone_uuid} isn't found")
+                if not (drone := registry.get_drone(crazyflie_debug_message.drone_id)):
+                    logger.error(f"Drone with id {crazyflie_debug_message.drone_id} isn't found")
 
                 if mission_id := drone.active_mission_id:  # type: ignore[union-attr]
                     await registry.logging_queue.put(

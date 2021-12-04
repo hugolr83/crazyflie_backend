@@ -7,9 +7,9 @@ from backend.registered_drone import RegisteredDrone
 
 
 def test_update_from_battery_and_position_log_message() -> None:
-    registered_drone = RegisteredDrone("uuid", MagicMock(spec=DroneLink))
+    registered_drone = RegisteredDrone(1, MagicMock(spec=DroneLink))
     log_message = BatteryAndPositionLogMessage(
-        drone_uuid="uuid",
+        drone_id=1,
         timestamp=2,
         kalman_state_x=10,
         kalman_state_y=11,
@@ -26,9 +26,9 @@ def test_update_from_battery_and_position_log_message() -> None:
 
 
 def test_update_from_range_log_message() -> None:
-    registered_drone = RegisteredDrone("uuid", MagicMock(spec=DroneLink))
+    registered_drone = RegisteredDrone(1, MagicMock(spec=DroneLink))
     log_message = RangeLogMessage(
-        drone_uuid="uuid",
+        drone_id=1,
         timestamp=2,
         range_front=110,
         range_back=111,
@@ -51,9 +51,9 @@ def test_update_from_range_log_message() -> None:
 
 
 def test_update_from_full_message() -> None:
-    registered_drone = RegisteredDrone("uuid", MagicMock(spec=DroneLink))
+    registered_drone = RegisteredDrone(1, MagicMock(spec=DroneLink))
     log_message = FullLogMessage(
-        drone_uuid="uuid",
+        drone_id=1,
         timestamp=2,
         kalman_state_x=10,
         kalman_state_y=11,

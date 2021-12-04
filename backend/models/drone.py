@@ -43,10 +43,16 @@ class DroneRange(BaseModel):
 
 
 class Drone(BaseModel):
-    uuid: str
+    id: int
     state: DroneState
     type: DroneType
     battery: DroneBattery
     position: DroneVec3
     orientation: Orientation
     range: DroneRange
+    total_distance: float
+
+
+class DronePositionOrientation(BaseModel):
+    position: DroneVec3
+    orientation: Orientation

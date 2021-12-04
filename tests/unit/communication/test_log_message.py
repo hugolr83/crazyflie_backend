@@ -41,7 +41,7 @@ def test_generate_log_configs() -> None:
 async def test_crazyflie_message_are_queued_on_incoming_battery_message() -> None:
     queue: Queue[LogMessage] = Queue()
     log_message = BatteryAndPositionLogMessage(
-        drone_uuid="uuid",
+        drone_id=1,
         timestamp=123,
         kalman_state_x=1,
         kalman_state_y=2,
@@ -61,7 +61,7 @@ async def test_crazyflie_message_are_queued_on_incoming_battery_message() -> Non
     log_config = next(config for config in generate_log_configs() if config.name == "battery_and_position")
 
     await on_incoming_crazyflie_log_message(
-        log_message.drone_uuid, queue, log_message.timestamp, data=data, log_config=log_config
+        log_message.drone_id, queue, log_message.timestamp, data=data, log_config=log_config
     )
 
     message = await asyncio.wait_for(queue.get(), 0.1)
@@ -71,7 +71,7 @@ async def test_crazyflie_message_are_queued_on_incoming_battery_message() -> Non
 async def test_crazyflie_messages_are_queued_on_incoming_range_message() -> None:
     queue: Queue[LogMessage] = Queue()
     log_message = RangeLogMessage(
-        drone_uuid="uuid",
+        drone_id=1,
         timestamp=123,
         range_front=10,
         range_back=11,
@@ -91,7 +91,7 @@ async def test_crazyflie_messages_are_queued_on_incoming_range_message() -> None
     log_config = next(config for config in generate_log_configs() if config.name == "range")
 
     await on_incoming_crazyflie_log_message(
-        log_message.drone_uuid, queue, log_message.timestamp, data=data, log_config=log_config
+        log_message.drone_id, queue, log_message.timestamp, data=data, log_config=log_config
     )
 
     message = await asyncio.wait_for(queue.get(), 0.1)
@@ -103,7 +103,7 @@ async def test_errors_are_logged_on_unsupported_config_name(logger_mock: MagicMo
     log_config = next(generate_log_configs())
     log_config.name = "bAdNaMe"
 
-    await on_incoming_crazyflie_log_message("", Queue(), 0, {}, log_config)
+    await on_incoming_crazyflie_log_message(1, Queue(), 0, {}, log_config)
 
     logger_mock.error.assert_called()
 
@@ -111,7 +111,7 @@ async def test_errors_are_logged_on_unsupported_config_name(logger_mock: MagicMo
 async def test_argos_messages_are_queued_on_incoming_message() -> None:
     queue: Queue[LogMessage] = Queue()
     log_message = FullLogMessage(
-        drone_uuid="uuid",
+        drone_id=1,
         timestamp=123,
         kalman_state_x=1,
         kalman_state_y=2,
@@ -142,7 +142,7 @@ async def test_argos_messages_are_queued_on_incoming_message() -> None:
         "range.right": log_message.range_right,
     }
 
-    await on_incoming_argos_log_message(log_message.drone_uuid, queue, json.dumps(data).encode("utf-8"))
+    await on_incoming_argos_log_message(log_message.drone_id, queue, json.dumps(data).encode("utf-8"))
 
     message = await asyncio.wait_for(queue.get(), 0.1)
     assert message == log_message

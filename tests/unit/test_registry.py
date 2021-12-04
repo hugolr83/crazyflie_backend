@@ -35,7 +35,7 @@ async def test_queues_are_initialized_and_retrieved() -> None:
 
 def test_drones_are_registered_and_unregistered() -> None:
     registry = get_registry()
-    registered_drone = RegisteredDrone("uuid", MagicMock(spec=DroneLink))
+    registered_drone = RegisteredDrone(1, MagicMock(spec=DroneLink))
 
     assert not registry.drones
 
