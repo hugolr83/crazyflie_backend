@@ -8,7 +8,7 @@ from backend.database.statements import (
     create_drones_mission_association,
     create_new_mission,
     get_all_missions,
-    get_drones_positions,
+    get_drones_metadata,
     get_log_message,
     get_mission,
     update_mission_state,
@@ -18,8 +18,8 @@ from backend.exceptions.response import (
     InvalidMissionStateException,
     MissionIsAlreadyActiveException,
 )
-from backend.models.drone import Drone, DronePositionOrientation, DroneType
-from backend.models.mission import DronesPositions, Log, Mission, MissionState
+from backend.models.drone import Drone, DronePositionOrientation, DronePositionOrientationRange, DroneType
+from backend.models.mission import Log, Mission, MissionState
 from backend.registry import get_registry
 from backend.routers.utils import generate_responses_documentation
 
@@ -32,10 +32,14 @@ async def drones(drone_type: Optional[DroneType] = None) -> list[Drone]:
     return list(map(lambda drone: drone.to_model(), get_registry().get_drones(drone_type)))
 
 
-@router.get("/drones/positions", operation_id="get_drones_positions", response_model=DronesPositions)
-async def drones_positions(mission_id: int) -> DronesPositions:
+@router.get(
+    "/drones/metadata",
+    operation_id="get_drones_metadata",
+    response_model=dict[int, list[DronePositionOrientationRange]],
+)
+async def drones_metadata(mission_id: int) -> dict[int, list[DronePositionOrientationRange]]:
     """Retrieve all the currently registered drones. You can also filter which type of drone you want."""
-    return await get_drones_positions(mission_id)
+    return await get_drones_metadata(mission_id)
 
 
 @router.post(
@@ -115,7 +119,7 @@ async def start_mission(mission_id: int) -> list[Drone]:
     return await send_command_to_all_drones(Command.START_EXPLORATION, selected_drones, mission_id)
 
 
-async def process_mission_termination(mission_id: int, desired_state: MissionState) -> list[Drone]:
+async def process_mission_termination(mission_id: int, desired_state: MissionState, command: Command) -> list[Drone]:
     mission = await get_mission(mission_id)
     await ensure_valid_state(mission, desired_state, allowed_states=[MissionState.STARTED])
 
@@ -124,7 +128,7 @@ async def process_mission_termination(mission_id: int, desired_state: MissionSta
     for drone in selected_drones:
         drone.active_mission_id = None
 
-    return await send_command_to_all_drones(Command.LAND, selected_drones, mission_id)
+    return await send_command_to_all_drones(command, selected_drones, mission_id)
 
 
 @router.post(
@@ -137,7 +141,7 @@ async def end_mission(mission_id: int) -> list[Drone]:
     """End the mission (immediate landing) for a specific drone type. Will communicate with all registered drones of
     that type.
     """
-    return await process_mission_termination(mission_id, MissionState.PENDING_ENDED)
+    return await process_mission_termination(mission_id, MissionState.PENDING_ENDED, Command.LAND)
 
 
 @router.post(
@@ -148,4 +152,4 @@ async def end_mission(mission_id: int) -> list[Drone]:
 )
 async def return_to_base(mission_id: int) -> list[Drone]:
     """Return to base for a specific drone type. Will communicate with all registered drones of that type."""
-    return await process_mission_termination(mission_id, MissionState.RETURNED_TO_BASE)
+    return await process_mission_termination(mission_id, MissionState.RETURNED_TO_BASE, Command.RETURN_TO_BASE)

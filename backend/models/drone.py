@@ -29,7 +29,7 @@ class DroneVec3(BaseModel):
     z: float
 
 
-class Orientation(BaseModel):
+class DroneOrientation(BaseModel):
     yaw: float
 
 
@@ -48,11 +48,17 @@ class Drone(BaseModel):
     type: DroneType
     battery: DroneBattery
     position: DroneVec3
-    orientation: Orientation
+    orientation: DroneOrientation
     range: DroneRange
     total_distance: float
 
 
 class DronePositionOrientation(BaseModel):
     position: DroneVec3
-    orientation: Orientation
+    orientation: DroneOrientation
+
+
+class DronePositionOrientationRange(BaseModel):
+    position: DroneVec3
+    orientation: DroneOrientation
+    range: DroneRange

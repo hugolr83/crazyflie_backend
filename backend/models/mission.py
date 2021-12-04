@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from backend.models.drone import DroneType, DroneVec3
+from backend.models.drone import DroneType
 
 
 class MissionState(str, Enum):
@@ -29,7 +29,3 @@ class Log(BaseModel):
     mission_id: int
     timestamp: datetime.datetime
     message: str
-
-
-class DronesPositions(BaseModel):
-    positions: dict[int, list[DroneVec3]]
