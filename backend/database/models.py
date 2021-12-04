@@ -8,8 +8,8 @@ from backend.models.drone import Drone, DroneType
 from backend.models.mission import Mission, MissionState
 
 
-class SavedPosition(Base):  # type: ignore[misc]
-    __tablename__: Final = "position"
+class SavedDroneMetrics(Base):
+    __tablename__: Final = "metrics"
     __table_args__: Final = (
         ForeignKeyConstraint(
             ("drone_id", "mission_id"), ("drone_mission_association.drone_id", "drone_mission_association.mission_id")
@@ -20,11 +20,18 @@ class SavedPosition(Base):  # type: ignore[misc]
     x = Column(sqlalchemy.Float)
     y = Column(sqlalchemy.Float)
     z = Column(sqlalchemy.Float)
+    yaw = Column(sqlalchemy.Float)
+    front = Column(sqlalchemy.Float)
+    back = Column(sqlalchemy.Float)
+    up = Column(sqlalchemy.Float)
+    left = Column(sqlalchemy.Float)
+    right = Column(sqlalchemy.Float)
+    bottom = Column(sqlalchemy.Float)
     drone_id = Column(sqlalchemy.Integer)
     mission_id = Column(sqlalchemy.Integer)
 
 
-class SavedDrone(Base):  # type: ignore[misc]
+class SavedDrone(Base):
     __tablename__: Final = "drone"
 
     id = Column(sqlalchemy.Integer, primary_key=True, index=True)
@@ -34,7 +41,7 @@ class SavedDrone(Base):  # type: ignore[misc]
         return Drone(id=self.id, drone_type=self.drone_type, mission_id=self.mission_id)
 
 
-class SavedMission(Base):  # type: ignore[misc]
+class SavedMission(Base):
     __tablename__: Final = "mission"
 
     id = Column(sqlalchemy.Integer, autoincrement=True, primary_key=True, index=True)
@@ -55,14 +62,14 @@ class SavedMission(Base):  # type: ignore[misc]
         )
 
 
-class DroneMissionAssociation(Base):  # type: ignore[misc]
+class DroneMissionAssociation(Base):
     __tablename__: Final = "drone_mission_association"
 
     drone_id = Column(sqlalchemy.Integer, ForeignKey("drone.id"), primary_key=True)
     mission_id = Column(sqlalchemy.Integer, ForeignKey("mission.id"), primary_key=True)
 
 
-class SavedLog(Base):  # type: ignore[misc]
+class SavedLog(Base):
     __tablename__: Final = "log"
 
     id = Column(sqlalchemy.Integer, autoincrement=True, primary_key=True, index=True)

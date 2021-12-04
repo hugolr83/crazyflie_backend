@@ -15,12 +15,12 @@ from backend.communication.log_message import (
 from backend.models.drone import (
     Drone,
     DroneBattery,
+    DroneOrientation,
     DronePositionOrientation,
     DroneRange,
     DroneState,
     DroneType,
     DroneVec3,
-    Orientation,
 )
 
 
@@ -31,7 +31,7 @@ class RegisteredDrone:
     state: DroneState = DroneState.NOT_READY
     battery: DroneBattery = DroneBattery(charge_percentage=0, voltage=0.0)
     position: DroneVec3 = DroneVec3(x=0.0, y=0.0, z=0.0)
-    orientation: Orientation = Orientation(yaw=0.0)
+    orientation: DroneOrientation = DroneOrientation(yaw=0.0)
     range: DroneRange = DroneRange(front=0.0, back=0.0, up=0.0, left=0.0, right=0.0, bottom=0.0)
     active_mission_id: Optional[int] = None
     total_distance: float = 0.0
@@ -67,7 +67,7 @@ class RegisteredDrone:
         )
         self.total_distance += self.get_distance_relative_to_current_position(new_position)
         self.position = new_position
-        self.orientation = Orientation(yaw=log_message.state_estimate_yaw)
+        self.orientation = DroneOrientation(yaw=log_message.state_estimate_yaw)
         self.state = STATES[log_message.drone_state]
 
     @update_from_log_message.register

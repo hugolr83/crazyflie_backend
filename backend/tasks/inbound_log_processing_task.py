@@ -6,7 +6,7 @@ import logging
 from fastapi.logger import logger
 
 from backend.database.models import SavedLog
-from backend.database.statements import create_position
+from backend.database.statements import create_drone_metrics
 from backend.registry import get_registry
 from backend.tasks.backend_task import BackendTask
 
@@ -23,8 +23,8 @@ class InboundLogProcessingTask(BackendTask):
                     continue
 
                 drone.update_from_log_message(log_message)
-                if (mission_id := registry.get_active_mission_id(drone.drone_type)) and log_message.position_updated:
-                    await create_position(drone.position, drone.id, mission_id)
+                if mission_id := registry.get_active_mission_id(drone.drone_type):
+                    await create_drone_metrics(drone, mission_id)
 
                 if not drone.is_flying:
                     await registry.mission_termination_queue.put(drone.drone_type)

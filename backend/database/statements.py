@@ -6,9 +6,9 @@ from fastapi.logger import logger
 from sqlalchemy import select, update
 
 from backend.database.database import async_session
-from backend.database.models import DroneMissionAssociation, SavedDrone, SavedLog, SavedMission, SavedPosition
-from backend.models.drone import DroneType, DroneVec3
-from backend.models.mission import DronesPositions, Log, Mission, MissionState
+from backend.database.models import DroneMissionAssociation, SavedDrone, SavedDroneMetrics, SavedLog, SavedMission
+from backend.models.drone import DroneOrientation, DronePositionOrientationRange, DroneRange, DroneType, DroneVec3
+from backend.models.mission import Log, Mission, MissionState
 from backend.registered_drone import RegisteredDrone
 
 
@@ -113,10 +113,23 @@ async def create_drone(drone: RegisteredDrone) -> None:
         await session.commit()
 
 
-async def create_position(position: DroneVec3, drone_id: int, mission_id: int) -> None:
+async def create_drone_metrics(drone: RegisteredDrone, mission_id: int) -> None:
     async with async_session() as session:
-        position = SavedPosition(x=position.x, y=position.y, z=position.y, drone_id=drone_id, mission_id=mission_id)
-        session.add(position)
+        metric = SavedDroneMetrics(
+            x=drone.position.x,
+            y=drone.position.y,
+            z=drone.position.z,
+            yaw=drone.orientation.yaw,
+            front=drone.range.front,
+            back=drone.range.back,
+            up=drone.range.up,
+            left=drone.range.left,
+            right=drone.range.right,
+            bottom=drone.range.bottom,
+            drone_id=drone.id,
+            mission_id=mission_id,
+        )
+        session.add(metric)
         await session.commit()
 
 
@@ -128,13 +141,21 @@ async def create_drones_mission_association(drones: Iterable[RegisteredDrone], m
         await session.commit()
 
 
-async def get_drones_positions(mission_id: int) -> DronesPositions:
+async def get_drones_metadata(mission_id: int) -> dict[int, list[DronePositionOrientationRange]]:
     async with async_session() as session:
-        statement = select(SavedPosition).filter(SavedPosition.mission_id == mission_id)
+        statement = select(SavedDroneMetrics).filter(SavedDroneMetrics.mission_id == mission_id)
         rows = await session.execute(statement)
 
-    positions = defaultdict(list)
+    metrics = defaultdict(list)
     for row in rows.scalars():
-        positions[row.drone_id].append(DroneVec3(x=row.x, y=row.y, z=row.z))
+        metrics[row.drone_id].append(
+            DronePositionOrientationRange(
+                position=DroneVec3(x=row.x, y=row.y, z=row.z),
+                orientation=DroneOrientation(yaw=row.yaw),
+                range=DroneRange(
+                    front=row.front, back=row.back, up=row.up, left=row.left, right=row.right, bottom=row.bottom
+                ),
+            )
+        )
 
-    return DronesPositions(positions=positions)
+    return metrics
