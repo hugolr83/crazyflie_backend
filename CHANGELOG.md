@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.9.0 (2021-12-04)
+### Feature
+* Support Angular 13 ([`2eae81a`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/2eae81abb919fc7450535dfea29cf8d770ceda9a))
+
 ## v1.8.0 (2021-12-04)
 ### Feature
 * Adding missing routes ([`673235e`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/673235edd34c52e62c6d8857f52985ed7f6eeb9f))
