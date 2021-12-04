@@ -118,7 +118,7 @@ async def create_drone_metrics(drone: RegisteredDrone, mission_id: int) -> None:
         metric = SavedDroneMetrics(
             x=drone.position.x,
             y=drone.position.y,
-            z=drone.position.y,
+            z=drone.position.z,
             yaw=drone.orientation.yaw,
             front=drone.range.front,
             back=drone.range.back,
