@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v1.8.0 (2021-12-04)
+### Feature
+* Adding missing routes ([`673235e`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/673235edd34c52e62c6d8857f52985ed7f6eeb9f))
+* Added routes for positions and missions ([`745732d`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/745732d36aeab94ba4aa8c95d5634bf9a99ef267))
+
 ## v1.7.1 (2021-11-28)
 ### Fix
 * Add retry for database connection ([`81023e2`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/81023e2f6eb59186746bdfb21ebc6093237a4f97))
