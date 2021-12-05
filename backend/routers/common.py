@@ -153,3 +153,11 @@ async def end_mission(mission_id: int) -> list[Drone]:
 async def return_to_base(mission_id: int) -> list[Drone]:
     """Return to base for a specific drone type. Will communicate with all registered drones of that type."""
     return await process_mission_termination(mission_id, MissionState.RETURNED_TO_BASE, Command.RETURN_TO_BASE)
+
+
+# Related to https://github.com/OpenAPITools/openapi-generator/issues/6804
+@router.get("/openapi-generator-workaround", response_model=DronePositionOrientationRange, deprecated=True)
+async def openapi_generator_workaround() -> DronePositionOrientationRange:
+    """Workaround for the issue where DronePositionOrientationRange wouldn't be imported within the generated
+    API client."""
+    raise NotImplementedError("This is not a real endpoint, only a workaround for fixing our OpenAPI schema")
