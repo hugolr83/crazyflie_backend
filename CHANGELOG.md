@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.10.1 (2021-12-05)
+### Fix
+* Lock on minor instead ([`09e5657`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/09e565782892d12f6727c9041dda16233a6f5744))
+
 ## v1.10.0 (2021-12-05)
 ### Feature
 * Added new format and missing data for drones ([`d203e27`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/d203e276ada4b0817fdaf852f1c24f09c33a63f3))
