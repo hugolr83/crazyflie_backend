@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.10.0 (2021-12-05)
+### Feature
+* Added new format and missing data for drones ([`d203e27`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/d203e276ada4b0817fdaf852f1c24f09c33a63f3))
+
 ## v1.9.0 (2021-12-04)
 ### Feature
 * Support Angular 13 ([`2eae81a`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/2eae81abb919fc7450535dfea29cf8d770ceda9a))
