@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.10.2 (2021-12-05)
+### Fix
+* Revert Angular bump ([`d580e31`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/d580e3141791556c9a136218a8954d4b906e35e3))
+
 ## v1.10.1 (2021-12-05)
 ### Fix
 * Lock on minor instead ([`09e5657`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/09e565782892d12f6727c9041dda16233a6f5744))
