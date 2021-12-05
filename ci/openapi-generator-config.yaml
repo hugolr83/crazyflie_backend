@@ -1,6 +1,6 @@
 enablePostProcessFile: true
 npmName: "@backend/api-client"
-ngVersion: 13.0.1
+ngVersion: 12.0.0
 serviceSuffix: ApiService
 stringEnums: true
 supportsES6: true
