@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.11.1 (2021-12-06)
+### Fix
+* Correct colomn name for SavedMap ([`2e9cbdd`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/2e9cbdd478631a32965cd3929b634ec05adffb07))
+
 ## v1.11.0 (2021-12-06)
 ### Feature
 * Added map endpoint ([`4e9ebba`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/4e9ebbafa8d55c88e5e3419d80c288387800fcda))
