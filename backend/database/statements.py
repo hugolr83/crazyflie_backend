@@ -1,3 +1,4 @@
+import base64
 from collections import defaultdict
 from datetime import datetime
 from typing import Iterable
@@ -6,9 +7,16 @@ from fastapi.logger import logger
 from sqlalchemy import select, update
 
 from backend.database.database import async_session
-from backend.database.models import DroneMissionAssociation, SavedDrone, SavedDroneMetrics, SavedLog, SavedMission
+from backend.database.models import (
+    DroneMissionAssociation,
+    SavedDrone,
+    SavedDroneMetrics,
+    SavedLog,
+    SavedMap,
+    SavedMission,
+)
 from backend.models.drone import DroneOrientation, DronePositionOrientationRange, DroneRange, DroneType, DroneVec3
-from backend.models.mission import Log, Mission, MissionState
+from backend.models.mission import Log, Map, Mission, MissionState
 from backend.registered_drone import RegisteredDrone
 
 
@@ -100,10 +108,10 @@ async def get_log_message(mission_id: int, starting_id: int) -> list[Log]:
         statement = select(SavedLog).filter(SavedLog.mission_id == mission_id, SavedLog.id >= starting_id)
         rows = await session.execute(statement)
 
-    return [
-        Log(id=row.id, mission_id=row.mission_id, timestamp=row.timestamp, message=row.message)
-        for row in rows.scalars()
-    ]
+        return [
+            Log(id=row.id, mission_id=row.mission_id, timestamp=row.timestamp, message=row.message)
+            for row in rows.scalars()
+        ]
 
 
 async def create_drone(drone: RegisteredDrone) -> None:
@@ -159,3 +167,19 @@ async def get_drones_metadata(mission_id: int) -> dict[int, list[DronePositionOr
         )
 
     return metrics
+
+
+async def create_saved_map(map_to_save: Map) -> None:
+    async with async_session() as session:
+        saved_map = SavedMap(mission_id=map_to_save.mission_id, map=base64.b64decode(map_to_save.map.encode("ascii")))
+        session.add(saved_map)
+        await session.commit()
+
+
+async def get_saved_map(mission_id: int) -> Map:
+    async with async_session() as session:
+        statement = select(SavedMap).filter(SavedMap.id == mission_id)
+        results = await session.execute(statement)
+        saved_map = results.scalars().first()
+
+    return Map(id=saved_map.mission_id, map=base64.b64encode(saved_map.map).decode("ascii"))

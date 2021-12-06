@@ -29,3 +29,8 @@ class Log(BaseModel):
     mission_id: int
     timestamp: datetime.datetime
     message: str
+
+
+class Map(BaseModel):
+    mission_id: int
+    map: str

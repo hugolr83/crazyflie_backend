@@ -7,10 +7,12 @@ from backend.communication.communication import send_command_to_all_drones
 from backend.database.statements import (
     create_drones_mission_association,
     create_new_mission,
+    create_saved_map,
     get_all_missions,
     get_drones_metadata,
     get_log_message,
     get_mission,
+    get_saved_map,
     update_mission_state,
 )
 from backend.exceptions.response import (
@@ -19,7 +21,7 @@ from backend.exceptions.response import (
     MissionIsAlreadyActiveException,
 )
 from backend.models.drone import Drone, DronePositionOrientation, DronePositionOrientationRange, DroneType
-from backend.models.mission import Log, Mission, MissionState
+from backend.models.mission import Log, Map, Mission, MissionState
 from backend.registry import get_registry
 from backend.routers.utils import generate_responses_documentation
 
@@ -60,6 +62,17 @@ async def set_drone_position(drone_id: int, new_position: DronePositionOrientati
 @router.get("/logs", operation_id="get_logs", response_model=list[Log])
 async def get_logs(mission_id: int, starting_id: int = 0) -> list[Log]:
     return await get_log_message(mission_id, starting_id)
+
+
+@router.get("/map", operation_id="get_map", response_model=Map)
+async def get_map(mission_id: int) -> Map:
+    return await get_saved_map(mission_id)
+
+
+@router.post("/map", operation_id="create_map", response_model=int)
+async def create_map(map_to_save: Map) -> int:
+    await create_saved_map(map_to_save)
+    return map_to_save.mission_id
 
 
 @router.get("/mission", operation_id="get_active_mission", response_model=Mission)

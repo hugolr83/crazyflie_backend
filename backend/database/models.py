@@ -1,3 +1,4 @@
+import base64
 from typing import Final
 
 import sqlalchemy
@@ -5,7 +6,7 @@ from sqlalchemy import Column, ForeignKey, ForeignKeyConstraint
 
 from backend.database.database import Base
 from backend.models.drone import Drone, DroneType
-from backend.models.mission import Mission, MissionState
+from backend.models.mission import Map, Mission, MissionState
 
 
 class SavedDroneMetrics(Base):
@@ -60,6 +61,16 @@ class SavedMission(Base):
             starting_time=self.starting_time,
             ending_time=self.ending_time,
         )
+
+
+class SavedMap(Base):
+    __tablename__: Final = "map"
+
+    mission_id = Column(sqlalchemy.Integer, ForeignKey("mission.id"), primary_key=True, index=True)
+    map = Column(sqlalchemy.LargeBinary)
+
+    def to_model(self) -> Map:
+        return Map(mission_id=self.mission_id, map=base64.decodebytes(self.map))
 
 
 class DroneMissionAssociation(Base):
