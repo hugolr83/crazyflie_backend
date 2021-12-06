@@ -177,8 +177,8 @@ async def create_saved_map(map_to_save: Map) -> None:
 
 async def get_saved_map(mission_id: int) -> Map:
     async with async_session() as session:
-        statement = select(SavedMap).filter(SavedMap.id == mission_id)
+        statement = select(SavedMap).filter(SavedMap.mission_id == mission_id)
         results = await session.execute(statement)
         saved_map = results.scalars().first()
 
-    return Map(id=saved_map.mission_id, map=saved_map.map.decode("ascii"))
+    return Map(mission_id=saved_map.mission_id, map=saved_map.map.decode("ascii"))
