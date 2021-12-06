@@ -1,4 +1,3 @@
-import base64
 from collections import defaultdict
 from datetime import datetime
 from typing import Iterable
@@ -171,7 +170,7 @@ async def get_drones_metadata(mission_id: int) -> dict[int, list[DronePositionOr
 
 async def create_saved_map(map_to_save: Map) -> None:
     async with async_session() as session:
-        saved_map = SavedMap(mission_id=map_to_save.mission_id, map=base64.b64decode(map_to_save.map.encode("ascii")))
+        saved_map = SavedMap(mission_id=map_to_save.mission_id, map=map_to_save.map.encode("ascii"))
         session.add(saved_map)
         await session.commit()
 
@@ -182,4 +181,4 @@ async def get_saved_map(mission_id: int) -> Map:
         results = await session.execute(statement)
         saved_map = results.scalars().first()
 
-    return Map(id=saved_map.mission_id, map=base64.b64encode(saved_map.map).decode("ascii"))
+    return Map(id=saved_map.mission_id, map=saved_map.map.decode("ascii"))
