@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.12.2 (2021-12-07)
+### Fix
+* Added byte len in struct pack ([`bb5cc2f`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/bb5cc2ff09b43efbae1136fd012b3218cd347791))
+
 ## v1.12.1 (2021-12-07)
 ### Fix
 * Missing await ([`c88f181`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/c88f181cf87c66971195e6eaed9e85b55d11b4d9))
