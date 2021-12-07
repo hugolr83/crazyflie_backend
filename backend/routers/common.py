@@ -55,7 +55,7 @@ async def set_drone_position(drone_id: int, new_position: DronePositionOrientati
     if not drone:
         raise DroneNotFoundException(drone_id)
 
-    drone.set_position(new_position)
+    await drone.set_position(new_position)
     return drone.to_model()
 
 
