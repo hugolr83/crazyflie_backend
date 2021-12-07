@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.12.0 (2021-12-07)
+### Feature
+* Add endpoints for P2P and set position in argos ([`f8d5e1a`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/f8d5e1a6fa9c322374e6c64c92da27508004ec2c))
+
 ## v1.11.1 (2021-12-06)
 ### Fix
 * Correct colomn name for SavedMap ([`2e9cbdd`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/2e9cbdd478631a32965cd3929b634ec05adffb07))
