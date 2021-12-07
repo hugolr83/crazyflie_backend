@@ -20,3 +20,7 @@ class DroneLink(ABC):
     @abstractmethod
     async def send_command(self, command: Command) -> None:
         ...  # pragma: no cover
+
+    @abstractmethod
+    async def send_command_with_payload(self, command: Command, payload: bytes) -> None:
+        ...  # pragma: no cover

@@ -113,3 +113,7 @@ class CrazyflieDroneLink(DroneLink):
     async def send_command(self, command: Command) -> None:
         await asyncio.wait_for(self.connection_established.wait(), timeout=CRAZYFLIE_CONNECTION_TIMEOUT)
         await asyncio.to_thread(self.crazyflie.appchannel.send_packet, data=struct.pack("I", command.value))
+
+    async def send_command_with_payload(self, command: Command, payload: bytes) -> None:
+        await asyncio.wait_for(self.connection_established.wait(), timeout=CRAZYFLIE_CONNECTION_TIMEOUT)
+        await asyncio.to_thread(self.crazyflie.appchannel.send_packet, data=struct.pack("Is", command.value, payload))

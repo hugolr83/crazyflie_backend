@@ -4,6 +4,7 @@ from math import sqrt
 from typing import Optional
 
 from backend.communication.argos_drone_link import ArgosDroneLink
+from backend.communication.command import Command
 from backend.communication.drone_link import DroneLink
 from backend.communication.log_message import (
     BatteryAndPositionLogMessage,
@@ -87,9 +88,7 @@ class RegisteredDrone:
         self._update_range(log_message)
 
     def set_position(self, new_position: DronePositionOrientation) -> None:
-        self.position = new_position.position
-        self.orientation = new_position.orientation
-        self.total_distance = 0.0
+        self.link.send_command_with_payload(Command.SET_POSITION, new_position.json().encode("utf-8"))
 
     def to_model(self) -> Drone:
         return Drone(
