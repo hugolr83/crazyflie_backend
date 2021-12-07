@@ -87,8 +87,8 @@ class RegisteredDrone:
         self._update_battery_and_position(log_message)
         self._update_range(log_message)
 
-    def set_position(self, new_position: DronePositionOrientation) -> None:
-        self.link.send_command_with_payload(Command.SET_POSITION, new_position.json().encode("utf-8"))
+    async def set_position(self, new_position: DronePositionOrientation) -> None:
+        await self.link.send_command_with_payload(Command.SET_POSITION, new_position.json().encode("utf-8"))
 
     def to_model(self) -> Drone:
         return Drone(
