@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.12.1 (2021-12-07)
+### Fix
+* Missing await ([`c88f181`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/c88f181cf87c66971195e6eaed9e85b55d11b4d9))
+
 ## v1.12.0 (2021-12-07)
 ### Feature
 * Add endpoints for P2P and set position in argos ([`f8d5e1a`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/f8d5e1a6fa9c322374e6c64c92da27508004ec2c))
