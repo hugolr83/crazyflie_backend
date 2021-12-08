@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.13.0 (2021-12-08)
+### Feature
+* Turns out it wasn't Alfred's fault ([`a5dcf89`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/a5dcf89877fa765c1122074b3fd88c962cb16fb5))
+
 ## v1.12.2 (2021-12-07)
 ### Fix
 * Added byte len in struct pack ([`bb5cc2f`](https://gitlab.com/polytechnique-montr-al/inf3995/20213/equipe-100/inf3995-backend/-/commit/bb5cc2ff09b43efbae1136fd012b3218cd347791))
