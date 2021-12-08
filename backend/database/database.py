@@ -27,7 +27,7 @@ async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False
     wait=wait_exponential(min=DATABASE_CONNECTION_MINIMUM_WAIT_SECOND),
     reraise=True,
 )
-async def setup_tables() -> None:
+async def setup_tables() -> None:  # pragma: no cover as it would need to start a database just to test that
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)

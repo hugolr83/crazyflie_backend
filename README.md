@@ -9,7 +9,7 @@ Code pour le Backend du cours d'INF3995
 
 ## Rouler l'API en local
 
-Commandes:
+Commandes (dans le root):
 ```bash
 poetry install
 poetry shell
@@ -17,6 +17,13 @@ python backend/app.py
 ```
 
 Ou simplement utiliser PyCharm avec le plugin de Poetry
+
+## Rouler les tests
+
+Commandes (dans le root):
+```bash
+poetry run pytest
+```
 
 ## Build l'image Docker
 

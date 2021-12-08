@@ -38,9 +38,6 @@ class SavedDrone(Base):
     id = Column(sqlalchemy.Integer, primary_key=True, index=True)
     drone_type = Column(sqlalchemy.Enum(DroneType))
 
-    def to_model(self) -> Drone:
-        return Drone(id=self.id, drone_type=self.drone_type, mission_id=self.mission_id)
-
 
 class SavedMission(Base):
     __tablename__: Final = "mission"

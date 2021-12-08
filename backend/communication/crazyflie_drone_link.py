@@ -90,7 +90,6 @@ class CrazyflieDroneLink(DroneLink):
         logger.warning(f"Log from Crazyflie {self.uri}: {text}")
         asyncio.run_coroutine_threadsafe(self.on_debug_log_message(message=text), loop)
 
-    # TODO: handle disconnections and connection error
     def _on_connection_failed(self, link_uri: str, msg: Any, loop: AbstractEventLoop) -> None:
         logger.error(f"Connection to {link_uri} failed: {msg}")
         loop.call_soon_threadsafe(self.connection_established.clear)

@@ -116,3 +116,21 @@ async def test_commands_are_properly_sent(command: Command) -> None:
     await drone_link.send_command(command)
     writer_mock.write.assert_called_with(struct.pack("Ic", command.value, b"\n"))
     writer_mock.drain.assert_awaited()
+
+
+async def test_commands_are_properly_sent_with_payload() -> None:
+    writer_mock = MagicMock(spec=StreamWriter)
+
+    drone_link = ArgosDroneLink(
+        ARGOS_ENDPOINT,
+        ARGOS_PORT,
+        MagicMock(spec=StreamReader),
+        writer_mock,
+        MagicMock(spec=InboundLogMessageCallable),
+        None,
+    )
+
+    payload = b"payload"
+    await drone_link.send_command_with_payload(Command.SET_POSITION, payload=payload)
+    writer_mock.write.assert_called_with(struct.pack(f"I{len(payload)}sc", Command.SET_POSITION, payload, b"\n"))
+    writer_mock.drain.assert_awaited()

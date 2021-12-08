@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import datetime
-from typing import Iterable
+from typing import Final, Iterable
 
 from fastapi.logger import logger
 from sqlalchemy import select, update
@@ -19,12 +19,15 @@ from backend.models.mission import Log, Map, Mission, MissionState
 from backend.registered_drone import RegisteredDrone
 
 
+INITIAL_DISTANCE: Final = 0
+
+
 async def create_new_mission(drone_type: DroneType) -> Mission:
     async with async_session() as session:
         mission = SavedMission(
             drone_type=drone_type,
             state=MissionState.CREATED,
-            total_distance=0,
+            total_distance=INITIAL_DISTANCE,
             starting_time=datetime.utcnow(),
             ending_time=None,
         )
