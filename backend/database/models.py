@@ -5,7 +5,7 @@ import sqlalchemy
 from sqlalchemy import Column, ForeignKey, ForeignKeyConstraint
 
 from backend.database.database import Base
-from backend.models.drone import Drone, DroneType
+from backend.models.drone import DroneType
 from backend.models.mission import Map, Mission, MissionState
 
 

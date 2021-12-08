@@ -1,7 +1,7 @@
 import base64
 import datetime
 
-from backend.database.models import SavedDrone, SavedMap, SavedMission
+from backend.database.models import SavedMap, SavedMission
 from backend.models.drone import DroneType
 from backend.models.mission import Map, Mission, MissionState
 
