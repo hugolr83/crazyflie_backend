@@ -16,10 +16,10 @@ STATES: Final = {
     0: DroneState.NOT_READY,
     1: DroneState.READY,
     2: DroneState.TAKING_OFF,
-    3: DroneState.HOVERING,
-    4: DroneState.EXPLORING,
-    5: DroneState.RETURNING_BASE,
-    6: DroneState.LANDING,
+    3: DroneState.LANDING,
+    4: DroneState.HOVERING,
+    5: DroneState.EXPLORING,
+    6: DroneState.RETURNING_BASE,
     7: DroneState.CRASHED,
 }
 
